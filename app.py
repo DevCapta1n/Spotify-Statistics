@@ -19,7 +19,8 @@ redirect_uri = urlBase + 'login'
 
 def base_64(text):
     text_as_bytes = text.encode('ascii')
-    return base64.b64encode(text_as_bytes)
+    text_as_base64 = base64.b64encode(text_as_bytes)
+    return text_as_base64.decode("ascii")
 
 @app.route('/')
 def root():
@@ -42,6 +43,7 @@ def login():
     """after redirection from the authorize function handle the users
     response to the spotify authorization page"""
 
+    client_secret = base_64("7c396993dafd46c3b30341981ec56217:ab3856d0c15b49fea1c56a467ac28605")
     auth_code = request.args.get('code')
     
     token_form = {}
@@ -49,34 +51,29 @@ def login():
     token_form["redirect_uri"] = redirect_uri
     token_form["grant_type"] = "authorization_code"
 
-    client_secret = base_64("7c396993dafd46c3b30341981ec56217:ab3856d0c15b49fea1c56a467ac28605")
-    t_headers = CaseInsensitiveDict()
-    print(client_secret)
-    print("//////////////////////////////")
-    print(client_secret[2:-1])
-    print("//////////////////////////////")
-    #t_headers["Authorization"] = f"Basic {str(client_secret)}"
-    t_headers["Authorization"] = "Basic N2MzOTY5OTNkYWZkNDZjM2IzMDM0MTk4MWVjNTYyMTc6YWIzODU2ZDBjMTViNDlmZWExYzU2YTQ2N2FjMjg2MDU="
+    # the client id and secret are combined in base64 encoded text for the authorization 
+    auth_header = CaseInsensitiveDict()
+    auth_header["Authorization"] = f"Basic {client_secret}"
 
+    # this request should return an access and refresh token for the authorized user
     token_url = "https://accounts.spotify.com/api/token"
-    api_token_resp = requests.post(token_url, headers=t_headers, data=token_form, json=True)
-    #print(json.dumps(api_token_resp.__dict__))
-    print(api_token_resp.json())
-    #print(api_token_resp.access_token)
-    #print(json.dumps(api_token_resp))
-    print(api_token_resp)
+    api_token_resp = requests.post(token_url, headers=auth_header, data=token_form, json=True)
 
     url = "https://api.spotify.com/v1/me/top/artists?time_range=long_term&limit=10&offset=0"
-
+    track_url = "https://api.spotify.com/v1/me/top/tracks?time_range=long_term&limit=10&offset=0"
+    
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json"
     headers["Content-Type"] = "application/json"
-    headers["Authorization"] = f"Bearer {auth_code}"
-    #headers["Authorization"] = "Bearer BQA91B6u9qY3jHwXxjXgP7EV3n4CDp0PnISQCWwbn1j4K_S8w0-qPF5cewG8b-1VP6dW_78pZgBzSVEpq5MZl4VIxREY-n_wsjM7TLemP7V8clPbGbzqBykWPhcdOtf7MCToYX_8C06jEzJ_406X8JsH"
+    headers["Authorization"] = f"Bearer {api_token_resp.json()['access_token']}"
 
     top_artists = requests.get(url, headers=headers)
-    print(top_artists)
-    print(top_artists.status_code)
-    #print(json.loads(top_artists))
+    top_songs = requests.get(track_url, headers=headers)
+    
+    top_ten_artists = top_artists.json()['items']
+    top_ten_tracks = top_songs.json()['items']
+
     return render_template('home.html',
-                            title="Your Spotify Statistics")
+                            title="Your Spotify Statistics",
+                            artists=top_ten_artists,
+                            tracks=top_ten_tracks)

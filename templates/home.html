@@ -1,3 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
+    <h2>All Time Top Artists:</h2>
+    {% for artist in artists %}
+        <p>{{ artist["name"] }}</p>
+    {% endfor %}
+    <h2>All Time Top Tracks:</h2>
+    {% for track in tracks %}
+        <p>{{ track["name"] }}</p>
+    {% endfor %}
 {% endblock %}
