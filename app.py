@@ -4,6 +4,7 @@ import json
 import requests
 import base64
 from requests.structures import CaseInsensitiveDict
+from update_database import update_user, update_top_artists, update_top_tracks
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///statify"
@@ -18,6 +19,8 @@ urlBase = "http://127.0.0.1:5000/"
 redirect_uri = urlBase + 'login'
 
 def base_64(text):
+    """convert text to ascii decoded base64"""
+
     text_as_bytes = text.encode('ascii')
     text_as_base64 = base64.b64encode(text_as_bytes)
     return text_as_base64.decode("ascii")
@@ -25,7 +28,11 @@ def base_64(text):
 @app.route('/')
 def root():
     """The root path renders the authorize page."""
-
+    
+    # TopArtist.query.delete()
+    # TopTrack.query.delete()
+    # #User.query.delete()
+    # db.session.commit()
     return render_template("authorize.html",
                             title="Welcome to Statify")
 
@@ -67,109 +74,27 @@ def login():
     headers["Content-Type"] = "application/json"
     headers["Authorization"] = f"Bearer {api_token_resp.json()['access_token']}"
 
+    #get the top ten artists and tracks for logged in user
     top_artists = requests.get(url, headers=headers)
-    top_songs = requests.get(track_url, headers=headers)
+    t_trks = requests.get(track_url, headers=headers)
     
     top_ten_artists = top_artists.json()['items']
-    top_ten_tracks = top_songs.json()['items']
+    top_ten_tracks = t_trks.json()['items']
 
+    #through a request to the spotify api get the current users profile data
     curr_user = requests.get('https://api.spotify.com/v1/me', headers=headers)
     curr_user = curr_user.json()
-    print("///////////////////////////////////////")
-    print(curr_user)
-    print("///////////////////////////////////////")
-    print(curr_user['images'])
-    print("///////////////////////////////////////")
-    print(type(curr_user['images'][0]))
-    print("///////////////////////////////////////")
-    print(curr_user['images'][0]['url'])
-    print("///////////////////////////////////////")
-    print(type(curr_user['images']))
-    print("///////////////////////////////////////")
-    new_user = User(
-        display_name = curr_user['display_name'],
-        profile_pic_url = curr_user['images'][0]['url']
-    )
-    # new_user = User(
-    #     display_name = "test_user",
-    #     profile_pic_url = "https://www.freeiconspng.com/uploads/icon-user-blue-symbol-people-person-generic--public-domain--21.png"
-    # )
-    db.session.add(new_user)
-    db.session.commit()
+    new_user = update_user(curr_user)
 
-    for artist in top_ten_artists:
-        top_artist = TopArtist(
-            rank = top_ten_artists.index(artist),
-            artist_name = artist['name'],
-            image = artist['images'][2]['url'],
-            user_id = new_user.id
-        )
-        db.session.add(top_artist)
-    db.session.commit()
+    update_top_artists(top_ten_artists, new_user)
     
-    for track in top_ten_tracks:
-        print(track)
-        print("///////////////////////////////////////")
-        top_track = TopTrack(
-            rank = top_ten_tracks.index(track),
-            name = track['name'],
-            album_cover = track['album']['images'][2]['url'],
-            artists = track['artists'],
-            user_id = new_user.id
-        )
-        db.session.add(top_track)
-    db.session.commit()
+    update_top_tracks(top_ten_tracks, new_user)
     
+    artists = TopArtist.query.filter_by(user_id=new_user.id).all()
+    tracks = TopTrack.query.filter_by(user_id=new_user.id).all()
+
     return render_template('home.html',
-                            title="Your Spotify Statistics",
-                            artists=top_ten_artists,
-                            tracks=top_ten_tracks)
-
-# soemthing = {'album': 
-# {'album_type': 'ALBUM',
-# 'artists': 
-# [{'external_urls': 
-# {'spotify': 'https://open.spotify.com/artist/56ZTgzPBDge0OvCGgMO3OY'}, 
-# 'href': 'https://api.spotify.com/v1/artists/56ZTgzPBDge0OvCGgMO3OY', 
-# 'id': '56ZTgzPBDge0OvCGgMO3OY', 
-# 'name': 'Beach House', 
-# 'type': 'artist', 
-# 'uri': 'spotify:artist:56ZTgzPBDge0OvCGgMO3OY'}], 
-# 'available_markets': [], 
-# 'external_urls': {'spotify': 'https://open.spotify.com/album/35vTE3hx3AAXtM6okpJIIt'}, 
-# 'href': 'https://api.spotify.com/v1/albums/35vTE3hx3AAXtM6okpJIIt', 
-# 'id': '35vTE3hx3AAXtM6okpJIIt', 
-# 'images': [{'height': 640, 'url': 'https://i.scdn.co/image/ab67616d0000b273fc685af465876c629ad111ef', 
-# 'width': 640}, 
-# {'height': 300, 
-# 'url': 'https://i.scdn.co/image/ab67616d00001e02fc685af465876c629ad111ef', 
-# 'width': 300}, 
-# {'height': 64, 
-# 'url': 'https://i.scdn.co/image/ab67616d00004851fc685af465876c629ad111ef', 
-# 'width': 64}], 
-# 'name': 'Depression Cherry', 
-# 'release_date': '2015-08-28', 
-# 'release_date_precision': 'day', 
-# 'total_tracks': 9, 'type': 'album', 
-# 'uri': 'spotify:album:35vTE3hx3AAXtM6okpJIIt'}, 
-# 'artists': [{'external_urls': {'spotify': 'https://open.spotify.com/artist/56ZTgzPBDge0OvCGgMO3OY'},
-# 'href': 'https://api.spotify.com/v1/artists/56ZTgzPBDge0OvCGgMO3OY', 
-# 'id': '56ZTgzPBDge0OvCGgMO3OY', 
-# 'name': 'Beach House', 
-# 'type': 'artist', 
-# 'uri': 'spotify:artist:56ZTgzPBDge0OvCGgMO3OY'}], 
-# 'available_markets': [], 
-# 'disc_number': 1, 
-# 'duration_ms': 320466, 
-# 'explicit': False, 
-# 'external_ids': {'isrc': 'USSUB1512203'}, 
-# 'external_urls': {'spotify': 'https://open.spotify.com/track/0hNhlwnzMLzZSlKGDCuHOo'}, 
-# 'href': 'https://api.spotify.com/v1/tracks/0hNhlwnzMLzZSlKGDCuHOo', 
-# 'id': '0hNhlwnzMLzZSlKGDCuHOo', 
-# 'is_local': False, 
-# 'name': 'Space Song', 
-# 'popularity': 3, 
-# 'preview_url': None, 
-# 'track_number': 3, 
-# 'type': 'track', 
-# 'uri': 'spotify:track:0hNhlwnzMLzZSlKGDCuHOo'}
+                            title=f"{new_user.display_name}'s Spotify Statistics",
+                            artists=artists,
+                            tracks=tracks,
+                            user=new_user)

@@ -1,11 +1,20 @@
 {% extends "base.html" %}
 {% block content %}
+    <!-- <h1>Spotify statistics for {{ user.display_name }}</h1> -->
     <h2>All Time Top Artists:</h2>
     {% for artist in artists %}
-        <p>{{ artist["name"] }}</p>
+        <p>rank: {{ artist.rank }}</p>
+        <img src="{{ artist.image }}" alt="image for {{ artist.artist_name }}">
+        <p>{{ artist.artist_name }}</p>
     {% endfor %}
     <h2>All Time Top Tracks:</h2>
     {% for track in tracks %}
-        <p>{{ track["name"] }}</p>
+        <p>rank: {{ track.rank }}</p>
+        <img src="{{ track.album_cover }}" alt="album cover for {{ track.name }}">
+        <p>{{ track.name }}</p>
+        <p>by:</p>
+        {% for artist in track.artists %}
+            <p>{{ artist.name }}</p>
+        {% endfor %}
     {% endfor %}
 {% endblock %}
