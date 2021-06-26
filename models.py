@@ -1,8 +1,29 @@
 """SQLAlchemy models for statify."""
 
 from flask_sqlalchemy import SQLAlchemy
+import json
+import sqlalchemy
+from sqlalchemy.types import TypeDecorator, VARCHAR
 
 db = SQLAlchemy()
+
+DEFAULT_IMAGE_URL = "https://www.freeiconspng.com/uploads/icon-user-blue-symbol-people-person-generic--public-domain--21.png"
+
+class TextPickleType(TypeDecorator):
+    """ a custom column type for storing a json string of multiple artists for
+    a single song"""
+
+    impl = VARCHAR
+
+    def process_bind_param(self, value, dialect):
+        if value is not None:
+            value = json.dumps(value)
+        return value
+
+    def process_result_value(self, value, dialect):
+        if value is not None:
+            value = json.loads(value)
+        return value
 
 class User(db.Model):
     """user of the website"""
@@ -12,31 +33,21 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     display_name = db.Column(db.Text, nullable=False)
     profile_pic_url = db.Column(db.Text, nullable=False)
-    country = db.Column(db.Text, nullable=False)
 
-    top_artists = db.relationship("Top_Artist", backref="user", cascade="all, delete-orphan")
-    top_tracks = db.relationship("Top_Track", backref="user", cascade="all, delete-orphan")
-    fav_genres = db.relationship("Favorite_Genre", backref="user", cascade="all, delete-orphan")
-    recommendations = db.relationship("Recommendation", backref="user", cascade="all, delete-orphan")
+    top_artists = db.relationship("TopArtist", backref="user", cascade="all, delete-orphan")
+    top_tracks = db.relationship("TopTrack", backref="user", cascade="all, delete-orphan")
 
-class Recommendation(db.Model):
-    """recommended albums for the user"""
+class TopTrack(db.Model):
+    """the top tracks for users with a ranking column"""
 
-    __tablename__ = "recommendations"
+    __tablename__ = "top_tracks"
 
     id = db.Column(db.Integer, primary_key=True)
-    album_name = db.Column(db.Text, nullable=False)
-    genre_name = db.Column(db.Text, nullable=False)
-    artists = db.relationship("Artist", backref="user", cascade="all, delete-orphan")
+    rank = db.Column(db.Integer, nullable=False)
+    name = db.Column(db.Text, nullable=False)
+    album_cover = db.Column(db.Text, nullable=False)
+    artists = db.Column(db.PickleType, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-
-class Artist(db.Model):
-    """a table of artist names"""
-
-    __tablename__ = "artists"
-
-    id = db.Column(db.Integer, primary_key=True)
-    artist_name = db.Column(db.Text, nullable=False)
 
 class TopArtist(db.Model):
     """a table which holds information about an artist along with their ranking for user"""
@@ -47,29 +58,6 @@ class TopArtist(db.Model):
     rank = db.Column(db.Integer, nullable=False)
     artist_name = db.Column(db.Text, nullable=False)
     image = db.Column(db.Text, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-
-class FavoriteGenre(db.Model):
-    """a table listing information about a genre including its rank and related user"""
-
-    __tablename__ = "favorite_genres"
-
-    id = db.Column(db.Integer, primary_key=True)
-    rank = db.Column(db.Integer, nullable=False)
-    genre_name = db.Column(db.Text, nullable=False)
-    icon = db.Column(db.Text, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-
-class TopTrack(db.Model):
-    """the top tracks for users with a ranking column"""
-
-    __tablename__ = "top_tracks"
-
-    id = db.Column(db.Integer, primary_key=True)
-    rank = db.Column(db.Integer, nullable=False)
-    genre_name = db.Column(db.Text, nullable=False)
-    album_cover = db.Column(db.Text, nullable=False)
-    artists = db.relationship("Artist", backref="user", cascade="all, delete-orphan")
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
 def connect_db(app):

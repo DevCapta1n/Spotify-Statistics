@@ -1,0 +1,39 @@
+how to make a json column in flask sqlalchemy:
+https://stackoverflow.com/questions/1378325/python-dicts-in-sqlalchemy
+
+extra tables that may be used later:
+
+(unused relationships for the user table)
+    fav_genres = db.relationship("FavoriteGenre", backref="user", cascade="all, delete-orphan")
+    recommendations = db.relationship("Recommendation", backref="user", cascade="all, delete-orphan")
+
+class Recommendation(db.Model):
+    """recommended albums for the user"""
+
+    __tablename__ = "recommendations"
+
+    id = db.Column(db.Integer, primary_key=True)
+    album_name = db.Column(db.Text, nullable=False)
+    genre_name = db.Column(db.Text, nullable=False)
+    artists = db.relationship("Artist", backref="user", cascade="all, delete-orphan")
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+class Artist(db.Model):
+    """a table of artist names"""
+
+    __tablename__ = "artists"
+
+    id = db.Column(db.Integer, primary_key=True)
+    artist_name = db.Column(db.Text, nullable=False)
+    recommendation_id = db.Column(db.Integer, db.ForeignKey('recommendations.id'), nullable=False)
+
+class FavoriteGenre(db.Model):
+    """a table listing information about a genre including its rank and related user"""
+
+    __tablename__ = "favorite_genres"
+
+    id = db.Column(db.Integer, primary_key=True)
+    rank = db.Column(db.Integer, nullable=False)
+    genre_name = db.Column(db.Text, nullable=False)
+    icon = db.Column(db.Text, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
