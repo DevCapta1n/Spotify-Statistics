@@ -26,18 +26,19 @@ def update_user(user_json):
 
     return target_user
 
-def update_top_artists(artists, new_user):
+def update_top_artists(artists, new_user, rainge):
     """accepting a list of artist data in json format update the top_artists table accordingly"""
 
     for artist in artists:
 
-        database_artist = TopArtist.query.filter_by(artist_name = artist['name'], user_id = new_user.id).first()
+        database_artist = TopArtist.query.filter_by(artist_name = artist['name'], user_id = new_user.id, time_range = rainge).first()
 
         top_artist = TopArtist(
             rank = artists.index(artist) + 1,
             artist_name = artist['name'],
             image = artist['images'][2]['url'],
-            user_id = new_user.id
+            user_id = new_user.id,
+            time_range = rainge
         )
         
         if database_artist:
@@ -55,19 +56,20 @@ def update_top_artists(artists, new_user):
 
     
 
-def update_top_tracks(tracks, new_user):
+def update_top_tracks(tracks, new_user, rainge):
     """accepting a list of track data in json format update the top_tracks table accordingly"""
 
     for track in tracks:
 
-        d_trk = TopTrack.query.filter_by(name = track['name'], user_id = new_user.id).first()
+        d_trk = TopTrack.query.filter_by(name = track['name'], user_id = new_user.id, time_range = rainge).first()
 
         t_trk = TopTrack(
             rank = tracks.index(track) + 1,
             name = track['name'],
             album_cover = track['album']['images'][2]['url'],
             artists = track['artists'],
-            user_id = new_user.id
+            user_id = new_user.id,
+            time_range = rainge
         )
 
         if d_trk:

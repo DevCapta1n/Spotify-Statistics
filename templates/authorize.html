@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
+    <p>Statify is a website which displays your Spotify top tracks and artists
+    by retrieving data from Spotify.</p>
     <form method="POST" action="/authorize">
-        <button>Login to Spotify</button>
+        <label>See your stats: </label>
+        <button>Login with Spotify</button>
     </form>
 {% endblock %}

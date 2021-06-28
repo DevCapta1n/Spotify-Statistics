@@ -1,20 +1,52 @@
 {% extends "base.html" %}
 {% block content %}
-    <!-- <h1>Spotify statistics for {{ user.display_name }}</h1> -->
-    <h2>All Time Top Artists:</h2>
-    {% for artist in artists %}
-        <p>rank: {{ artist.rank }}</p>
-        <img src="{{ artist.image }}" alt="image for {{ artist.artist_name }}">
-        <p>{{ artist.artist_name }}</p>
-    {% endfor %}
-    <h2>All Time Top Tracks:</h2>
-    {% for track in tracks %}
-        <p>rank: {{ track.rank }}</p>
-        <img src="{{ track.album_cover }}" alt="album cover for {{ track.name }}">
-        <p>{{ track.name }}</p>
-        <p>by:</p>
-        {% for artist in track.artists %}
-            <p>{{ artist.name }}</p>
-        {% endfor %}
-    {% endfor %}
+    <form id="time_form">
+        <fieldset>
+            <legend>Time Range</legend>
+            <label for="artist_time">Select A Time Range for Artists</label>
+            <input list="time_options" id="artist_time" name="artist_time" placeholder="{{ art_range }}">
+            <label for="track_time">Select A Time Range for Tracks</label>
+            <input list="time_options" id="track_time" name="track_time" placeholder="{{ trk_range }}">
+            <datalist id="time_options">
+                <option value="All Time">
+                <option value="Six Months">
+                <option value="Four Weeks">
+            </datalist>
+            <button id="time_button" name="{{ user.id }}">Select</button>
+        </fieldset>
+    </form>
+    <div class="container" id="stats_home">
+        <div class="row">
+            <div class="col">
+                {% if art_range == "medium_term" or art_range == "short_term" %}
+                <h3>Your Top Artists for the last {{ art_range }}:</h3>
+                {% else %}
+                <h3>Your All Time Top Artists:</h3>
+                {% endif %}
+                
+                {% for artist in artists %}
+                    <p>rank: {{ artist.rank }}</p>
+                    <img src="{{ artist.image }}" alt="image for {{ artist.artist_name }}">
+                    <p>{{ artist.artist_name }}</p>
+                {% endfor %}
+            </div>
+            <div class="col">
+                {% if trk_range == "medium_term" or trk_range == "short_term" %}
+                <h3>Your Top Tracks for the Last {{ trk_range }}:</h3>
+                {% else %}
+                <h3>Your All Time Top Tracks:</h3>
+                {% endif %}
+
+                {% for track in tracks %}
+                    <p>rank: {{ track.rank }}</p>
+                    <img src="{{ track.album_cover }}" alt="album cover for {{ track.name }}">
+                    <p>{{ track.name }}</p>
+                    <p>by:</p>
+                    {% for artist in track.artists %}
+                        <p>{{ artist.name }}</p>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 {% endblock %}

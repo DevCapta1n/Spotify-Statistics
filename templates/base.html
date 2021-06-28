@@ -4,29 +4,29 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Statify</title>
+    <script src="https://unpkg.com/jquery"></script>
     <link rel="shortcut icon" href="static/images/favicon.ico">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
-    
+    <link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
+<body style="background-color:cornsilk;">
     <nav class="navbar navbar-expand">
     <div class="container-fluid">
         <div class="navbar-header">
-        <a href="/" class="navbar-brand">
             <img src="/static/images/statifyFavicon.png" alt="logo">
             <span>Statify</span>
-        </a>
         </div>
         <ul class="nav navbar-nav navbar-right">
-        {% if not g.user %}
+        {% if not user %}
         <li><a href="/authorize">Link Spotify</a></li>
         {% else %}
         <li>
-            <!-- <a href="/users/{{ g.user.id }}">
-            <img src="{{ g.user.image_url }}" alt="{{ g.user.username }}">
-            </a> -->
+            <img src="{{ user.profile_pic_url }}" alt="{{ user.display_name }}'s profile picture">
+            <span>{{ user.display_name }}</span>
         </li>
-        <li><a href="/logout">Log out</a></li>
+        <li>
+            <a href="/logout/{{ user.id }}">Log out</a>
+        </li>
         {% endif %}
         </ul>
     </div>
@@ -37,5 +37,13 @@
     <div id="content">
         {% block content %}{% endblock %}
     </div>
+    <footer>
+        {% for category, message in get_flashed_messages(with_categories=True) %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        Created By: Jack Winford
+    </footer>
 </body>
+<script src="https://unpkg.com/axios/dist/axios.js"></script>
+<script src="/static/script.js"></script>
 </html>

@@ -47,6 +47,7 @@ class TopTrack(db.Model):
     name = db.Column(db.Text, nullable=False)
     album_cover = db.Column(db.Text, nullable=False)
     artists = db.Column(db.PickleType, nullable=False)
+    time_range = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
 class TopArtist(db.Model):
@@ -58,6 +59,7 @@ class TopArtist(db.Model):
     rank = db.Column(db.Integer, nullable=False)
     artist_name = db.Column(db.Text, nullable=False)
     image = db.Column(db.Text, nullable=False)
+    time_range = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
 def connect_db(app):
