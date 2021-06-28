@@ -1,6 +1,9 @@
+/* style sheet for all templates (to be expanded) */
+
 body {
     background-color: cornsilk;
 }
+
 fieldset {
     display: block;
     margin-left: 2px;
@@ -10,8 +13,5 @@ fieldset {
     padding-left: 0.75em;
     padding-right: 0.75em;
     border: 4px groove;
-    /* border: 2px groove (internal value); */
+
 }
-/* html {
-    background-color: cornsilk;
-} */

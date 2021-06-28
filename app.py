@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template, flash, g
+from flask import Flask, request, redirect, render_template, flash
 from models import db, connect_db, User, TopArtist, TopTrack
 import json
 import requests
@@ -29,10 +29,6 @@ def base_64(text):
 def root():
     """The root path renders the authorize page."""
     
-    # TopArtist.query.delete()
-    # TopTrack.query.delete()
-    # #User.query.delete()
-    # db.session.commit()
     return render_template("authorize.html",
                             title="Welcome to Statify")
 
@@ -49,7 +45,7 @@ def authorize():
 def login():
     """after redirection from the authorize function handle the users
     response to the spotify authorization page"""
-    #if not g.user:
+
     client_secret = base_64("7c396993dafd46c3b30341981ec56217:ab3856d0c15b49fea1c56a467ac28605")
     auth_code = request.args.get('code')
     
@@ -74,8 +70,8 @@ def login():
     #through a request to the spotify api get the current users profile data
     curr_user = requests.get('https://api.spotify.com/v1/me', headers=headers)
     curr_user = curr_user.json()
+
     new_user = update_user(curr_user)
-    g.user = new_user #add to flask global
 
     ranges = ['long_term', 'medium_term', 'short_term']
     for rainge in ranges:
@@ -105,19 +101,10 @@ def display_stats(user_id):
     curr_user = User.query.get_or_404(user_id)
 
     if request.method == 'POST':
-        #print(request.json)
-        #print(request.data)
-        #request_json = request.json
-        #data_str = request.data
-        #data_arr = data_str.split(',')
-        # artist_range = request_json['artist_range']
-        # track_range = request_json['track_range']
-        #artist_range = data_arr[0]
-        #track_range = data_arr[1]
+
         artist_range = request.form['artist_range']
         track_range = request.form['track_range']
-        print(artist_range)
-        print(track_range)
+
         artists = TopArtist.query.filter_by(user_id=user_id, time_range=artist_range).all()
         tracks = TopTrack.query.filter_by(user_id=user_id, time_range=track_range).all()
         return render_template('stats.html',
@@ -128,8 +115,6 @@ def display_stats(user_id):
 
     artists = TopArtist.query.filter_by(user_id=user_id, time_range=artist_range).all()
     tracks = TopTrack.query.filter_by(user_id=user_id, time_range=track_range).all()
-    print(artists)
-    print(tracks)
     return render_template('home.html',
                             title=f"{curr_user.display_name}'s Spotify Statistics",
                             artists=artists,
