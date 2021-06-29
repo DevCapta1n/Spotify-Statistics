@@ -1,6 +1,13 @@
+//Javascript for Statify 
 const urlBase = "http://127.0.0.1:5000/";
 
 function time_range(evt) {
+    /**
+     * This function is triggered on the submission of the time form
+     * on the home page.
+     * It makes a call to the server and replaces the stats home area
+     * of the page with the response html from the server.
+     */
     evt.preventDefault()
 
     let artist_range = $("#artist_time").val();
@@ -39,7 +46,12 @@ function time_range(evt) {
 
     $("#stats_home").load(url, data)
 }
+
 function lastModified() {
+    /**
+     * Function to dynamically update the footer with the date
+     * of latest modifications.
+     */
     const dateObject = new Date(document.lastModified);
 
     const month = dateObject.getUTCMonth() + 1;
@@ -51,10 +63,18 @@ function lastModified() {
 }
 
 function getRandomInt(max) {
+    /**
+     * Get a random int between 0 and max with zero inclusive but
+     * max being exclusive.
+     */
     return Math.floor(Math.random() * max);
 }
 
 function backGroundImage() {
+    /**
+     * Select one of three background images and set that image as the background
+     * of the page body. (Credits for images in README.md)
+     */
     randomInt = getRandomInt(3);
 
     if (randomInt == 0) {
@@ -66,11 +86,11 @@ function backGroundImage() {
     }
     
 }
+
 if ($("#auth_body").length) {
     //if the auth_body id exists then the page must be the authorization page
     backGroundImage()
 }
-//backGroundImage()
 
 lastModified()
 

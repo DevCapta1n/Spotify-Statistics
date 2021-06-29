@@ -73,7 +73,7 @@ def update_top_tracks(tracks, new_user, rainge):
         if d_trk:
 
             if t_trk.rank != d_trk.rank or t_trk.album_cover != d_trk.album_cover or t_trk.artists != d_trk.artists:
-                print("inside second if statement")
+
                 #if d_trk exists and it is not a copy of t_trk, update it
                 db.session.delete(d_trk)
                 db.session.add(t_trk)

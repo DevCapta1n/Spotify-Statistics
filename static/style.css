@@ -1,8 +1,7 @@
-/* style sheet for all templates (to be expanded) */
+/* style sheet for all templates */
 
 body {
     background-color: cornsilk;
-    /* background-color: rgb(93,58,26); */
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
@@ -16,53 +15,6 @@ body {
     padding-bottom: 2.5rem;    /* Footer height */
 }
 
-/* nav bar */
-
-nav {
-    margin-top: 0px;
-    height: 80px;
-    background-color: rgb(0, 82, 0);
-}
-.navbar-header {
-    margin-top: 0px;
-}
-
-.navbar-header img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    padding-top: 0px;
-    margin: 0%;
-    background-color: white;
-}
-
-.navbar-header span {
-    font-family: "Lucida Console", "Courier New", monospace;
-    font-size: 60px;
-    padding-left: 100px;
-    margin: 0%;
-    height: 80px;
-    color: white;
-}
-
-.nav_link {
-    font-family: "Lucida Console", "Courier New", monospace;
-    color: white;
-    font-size: 25px;
-}
-
-.nav_link:hover {
-    color: white;
-}
-
-#nav_name {
-    font-family: "Lucida Console", "Courier New", monospace;
-    color: white;
-    font-size: 20px;
-    padding-left: 1em;
-    padding-right: 3em;
-}
-/* end nav bar styling */
 #auth_title span {
     font-size: 4.5em;
     font-weight: bold;
@@ -131,8 +83,55 @@ footer {
 #button_div {
     margin: 0 auto;
 }
+/* nav bar */
 
-/* authorize page styling */
+nav {
+    margin-top: 0px;
+    height: 80px;
+    background-color: rgb(0, 82, 0);
+}
+.navbar-header {
+    margin-top: 0px;
+}
+
+.navbar-header img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding-top: 0px;
+    margin: 0%;
+    background-color: white;
+}
+
+.navbar-header span {
+    font-family: "Lucida Console", "Courier New", monospace;
+    font-size: 60px;
+    padding-left: 100px;
+    margin: 0%;
+    height: 80px;
+    color: white;
+}
+
+.nav_link {
+    font-family: "Lucida Console", "Courier New", monospace;
+    color: white;
+    font-size: 25px;
+}
+
+.nav_link:hover {
+    color: white;
+}
+
+#nav_name {
+    font-family: "Lucida Console", "Courier New", monospace;
+    color: white;
+    font-size: 20px;
+    padding-left: 1em;
+    padding-right: 3em;
+}
+/* end nav bar styling */
+
+/* authorize page specific styling */
 #auth_footer span, #auth_title span, #auth_content span, #auth_content form label, #login_title, .facts span{
     color: white;
     background-color: rgb(0, 82, 0);

@@ -9,6 +9,12 @@ https://api.spotify.com/v1/me/top/%7Btype%7D
 https://api.spotify.com/v1/me
 
 Photo Credits:
-Travis Yewell on Unsplash
-Mick Haupt on Unsplash
-Heidi Fin on Unsplash
+https://unsplash.com/photos/F-B7kWlkxDQ
+Travis Yewell on Unsplash,
+https://unsplash.com/photos/vGXHIh3URzc
+Mick Haupt on Unsplash,
+https://unsplash.com/photos/H4fYXZ1hyco
+and Heidi Fin on Unsplash
+
+The favicon is original by Jack Winford but does include an edited copy of 
+the spofiy icon.
