@@ -1,70 +1,127 @@
-{% extends "base.html" %}
-{% block content %}
-    <form id="time_form">
-        <fieldset>
-            <legend>Time Range</legend>
-            <label for="artist_time">Select A Time Range for Artists</label>
-            <input list="time_options" id="artist_time" name="artist_time" placeholder="{{ art_range }}">
-            <label for="track_time">Select A Time Range for Tracks</label>
-            <input list="time_options" id="track_time" name="track_time" placeholder="{{ trk_range }}">
-            <datalist id="time_options">
-                <option value="All Time">
-                <option value="Six Months">
-                <option value="Four Weeks">
-            </datalist>
-            <button id="time_button" name="{{ user.id }}">Select</button>
-        </fieldset>
-    </form>
-    <div class="container" id="stats_home">
-        <div class="row">
-            <div class="col">
-                {% if art_range == "medium_term" or art_range == "short_term" %}
-                <h3>Your Top Artists for the last {{ art_range }}:</h3>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statify</title>
+    <script src="https://unpkg.com/jquery"></script>
+    <link rel="shortcut icon" href="static/images/favicon.ico">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div id="content-wrap">
+        <nav class="navbar navbar-expand">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <img src="/static/images/statifyFavicon.png" width="80" height="80" alt="logo">
+                    <span>STATIFY</span>
+                </div>
+                <ul class="nav navbar-nav navbar-right">
+                {% if not user %}
+                <li><a class="nav_link" href="/authorize">Link Your Spotify</a></li>
                 {% else %}
-                <h3>Your All Time Top Artists:</h3>
+                <li>
+                    <img src="{{ user.profile_pic_url }}" width="80" height="80" alt="{{ user.display_name }}'s profile picture">
+                    <span id="nav_name">{{ user.display_name }}</span>
+                </li>
+                <li>
+                    <a class="nav_link" href="/logout/{{ user.id }}">Log out</a>
+                </li>
                 {% endif %}
-                <table class="table table-success table-striped">
-                    <thead>
-                        <th>Rank</th>
-                        <th>Image</th>
-                        <th>Name</th>
-                    </thead>
-                    {% for artist in artists %}
-                    <tr>
-                        <td>#{{ artist.rank }}</td>
-                        <td><img src="{{ artist.image }}" width="160" height="160" alt="image for {{ artist.artist_name }}"></td>
-                        <td>{{ artist.artist_name }}</td>
-                    </tr>
-                    {% endfor %}
-                </table>
+                </ul>
             </div>
-            <div class="col">
-                {% if trk_range == "medium_term" or trk_range == "short_term" %}
-                <h3>Your Top Tracks for the Last {{ trk_range }}:</h3>
-                {% else %}
-                <h3>Your All Time Top Tracks:</h3>
-                {% endif %}
-                <table class="table table-success table-striped">
-                    <thead>
-                        <th>Rank</th>
-                        <th>Album Cover</th>
-                        <th>Name</th>
-                        <th>Artist(s)</th>
-                    </thead>
-                    {% for track in tracks %}
-                    <tr>
-                        <td>#{{ track.rank }}</td>
-                        <td><img src="{{ track.album_cover }}" width="160" height="160" alt="album cover for {{ track.name }}"></td>
-                        <td>{{ track.name }}</td>
-                        <td>
-                            {% for artist in track.artists %}
-                                <p>{{ artist.name }}</p>
+        </nav>
+        <div id="title">
+            <h1>{{ title }}</h1>
+        </div>
+        <div id="content">
+            <form id="time_form">
+                <fieldset>
+                    <legend>Time Range</legend>
+                    <div class="row">
+                        <div class="col-1"></div>
+                        <div class="col-4 mb-3">
+                            <label for="artist_time">Time Range for Artists</label>
+                            <input list="time_options" id="artist_time" name="artist_time" placeholder="All Time" class="form-control">
+                            <div class="form-text">The only valid inputs are listed, anything else will default to All Time</div>
+                        </div>
+                        <div class="col-2"></div>
+                        <div class="col-4 mb-3">
+                            <label for="track_time">Time Range for Tracks</label>
+                            <input list="time_options" id="track_time" name="track_time" placeholder="All Time" class="form-control">
+                            <div class="form-text">The only valid inputs are listed, anything else will default to All Time</div>
+                        </div>
+                        <div class="col-1"></div>
+                        <datalist id="time_options">
+                            <option value="All Time">
+                            <option value="Six Months">
+                            <option value="Four Weeks">
+                        </datalist>
+                    </div>
+                    <div id="button_container" class="row">
+                        <div id="button_div">
+                            <button id="time_button" name="{{ user.id }}" class="btn btn-success btn-lg">Select</button>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+            <div class="container" id="stats_home">
+                <div class="row">
+                    <div class="col">
+                        <h1>Your All Time Top Artists:</h1>
+                        <table class="table table-success table-striped">
+                            <thead>
+                                <th>Rank</th>
+                                <th>Image</th>
+                                <th>Name</th>
+                            </thead>
+                            {% for artist in artists %}
+                            <tr>
+                                <td>#{{ artist.rank }}</td>
+                                <td><img src="{{ artist.image }}" width="160" height="160" alt="image for {{ artist.artist_name }}"></td>
+                                <td>{{ artist.artist_name }}</td>
+                            </tr>
                             {% endfor %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </table>
+                        </table>
+                    </div>
+                    <div class="col">
+                        <h1>Your All Time Top Tracks:</h1>
+                        <table class="table table-success table-striped">
+                            <thead>
+                                <th>Rank</th>
+                                <th>Album Cover</th>
+                                <th>Name</th>
+                                <th>Artist(s)</th>
+                            </thead>
+                            {% for track in tracks %}
+                            <tr>
+                                <td>#{{ track.rank }}</td>
+                                <td><img src="{{ track.album_cover }}" width="160" height="160" alt="album cover for {{ track.name }}"></td>
+                                <td>{{ track.name }}</td>
+                                <td>
+                                    {% for artist in track.artists %}
+                                        <p>{{ artist.name }}</p>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
+        <div id="flash_zone">
+            {% for category, message in get_flashed_messages(with_categories=True) %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
     </div>
-{% endblock %}
+    <footer>
+        <span>created by: Jack Winford</span><br>
+        <span id="modified"></span>
+    </footer>
+</body>
+<script src="https://unpkg.com/axios/dist/axios.js"></script>
+<script src="/static/script.js"></script>
+</html>

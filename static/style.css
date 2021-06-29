@@ -2,6 +2,7 @@
 
 body {
     background-color: cornsilk;
+    /* background-color: rgb(93,58,26); */
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
@@ -76,6 +77,59 @@ fieldset {
     padding-left: 0.75em;
     padding-right: 0.75em;
     border: 4px groove;
+}
+
+footer {
+    height: 2.5rem;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    padding-bottom: 0px;
+    font-size: 2em;
+    font-weight: bolder;
+    color: #c3e6cb;
+    font-family: "Lucida Console", "Courier New", monospace;
+    -webkit-text-stroke: 1px rgb(0, 82, 0);
+    text-shadow:
+        3px 3px 0 rgb(0, 82, 0),
+        -1px -1px 0 rgb(0, 82, 0),  
+        1px -1px 0 rgb(0, 82, 0),
+        -1px 1px 0 rgb(0, 82, 0),
+        1px 1px 0 rgb(0, 82, 0);
+}
+
+#title h1 {
+    font-size: 4em;
+    font-weight: bolder;
+    color: #c3e6cb;
+    font-family: "Lucida Console", "Courier New", monospace;
+    text-align: center;
+    -webkit-text-stroke: 1px rgb(0, 82, 0);
+    text-shadow:
+        3px 3px 0 rgb(0, 82, 0),
+        -1px -1px 0 rgb(0, 82, 0),  
+        1px -1px 0 rgb(0, 82, 0),
+        -1px 1px 0 rgb(0, 82, 0),
+        1px 1px 0 rgb(0, 82, 0);
+}
+
+#stats_home h1 {
+    font-size: 3em;
+    font-weight: bolder;
+    color: #c3e6cb;
+    font-family: "Lucida Console", "Courier New", monospace;
+    text-align: center;
+    -webkit-text-stroke: 1px rgb(0, 82, 0);
+    text-shadow:
+        3px 3px 0 rgb(0, 82, 0),
+        -1px -1px 0 rgb(0, 82, 0),  
+        1px -1px 0 rgb(0, 82, 0),
+        -1px 1px 0 rgb(0, 82, 0),
+        1px 1px 0 rgb(0, 82, 0);
+}
+
+#button_div {
+    margin: 0 auto;
 }
 
 /* authorize page styling */

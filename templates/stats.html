@@ -1,36 +1,54 @@
 <div class="row">
     <div class="col">
         {% if art_range == "medium_term" %}
-        <h3>Your Top Artists For The last Six Months:</h3>
+        <h1>Your Top Artists For The last Six Months:</h1>
         {% elif art_range == "short_term" %}
-        <h3>Your Top Artists For The last Four Weeks:</h3>
+        <h1>Your Top Artists For The last Four Weeks:</h1>
         {% else %}
-        <h3>Your All Time Top Artists:</h3>
+        <h1>Your All Time Top Artists:</h1>
         {% endif %}
-        
-        {% for artist in artists %}
-            <p>rank: {{ artist.rank }}</p>
-            <img src="{{ artist.image }}" width="160" height="160" alt="image for {{ artist.artist_name }}">
-            <p>{{ artist.artist_name }}</p>
-        {% endfor %}
+        <table class="table table-success table-striped">
+            <thead>
+                <th>Rank</th>
+                <th>Image</th>
+                <th>Name</th>
+            </thead>
+            {% for artist in artists %}
+            <tr>
+                <td>#{{ artist.rank }}</td>
+                <td><img src="{{ artist.image }}" width="160" height="160" alt="image for {{ artist.artist_name }}"></td>
+                <td>{{ artist.artist_name }}</td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
     <div class="col">
         {% if trk_range == "medium_term" %}
-        <h3>Your Top Tracks For The Last Six Months:</h3>
+        <h1>Your Top Tracks For The Last Six Months:</h1>
         {% elif trk_range == "short_term" %}
-        <h3>Your Top Tracks For The Last Four Weeks:</h3>
+        <h1>Your Top Tracks For The Last Four Weeks:</h1>
         {% else %}
-        <h3>Your All Time Top Tracks:</h3>
+        <h1>Your All Time Top Tracks:</h1>
         {% endif %}
-
-        {% for track in tracks %}
-            <p>rank: {{ track.rank }}</p>
-            <img src="{{ track.album_cover }}" width="160" height="160" alt="album cover for {{ track.name }}">
-            <p>{{ track.name }}</p>
-            <p>by:</p>
-            {% for artist in track.artists %}
-                <p>{{ artist.name }}</p>
+        <table class="table table-success table-striped">
+            <thead>
+                <th>Rank</th>
+                <th>Album Cover</th>
+                <th>Name</th>
+                <th>Artist(s)</th>
+            </thead>
+            {% for track in tracks %}
+            <tr>
+                <td>#{{ track.rank }}</td>
+                <td><img src="{{ track.album_cover }}" width="160" height="160" alt="album cover for {{ track.name }}"></td>
+                <td>{{ track.name }}</td>
+                <td>
+                    {% for artist in track.artists %}
+                        <p>{{ artist.name }}</p>
+                    {% endfor %}
+                </td>
+            </tr>
             {% endfor %}
-        {% endfor %}
+        </table>
     </div>
 </div>
