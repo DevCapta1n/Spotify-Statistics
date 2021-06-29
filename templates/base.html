@@ -10,38 +10,43 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <img src="/static/images/statifyFavicon.png" alt="logo">
-            <span>Statify</span>
+    <div id="content-wrap">
+        <nav class="navbar navbar-expand">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <img src="/static/images/statifyFavicon.png" width="80" height="80" alt="logo">
+                    <span>STATIFY</span>
+                </div>
+                <ul class="nav navbar-nav navbar-right">
+                {% if not user %}
+                <li><a class="nav_link" href="/authorize">Link Your Spotify</a></li>
+                {% else %}
+                <li>
+                    <img src="{{ user.profile_pic_url }}" width="80" height="80" alt="{{ user.display_name }}'s profile picture">
+                    <span id="nav_name">{{ user.display_name }}</span>
+                </li>
+                <li>
+                    <a class="nav_link" href="/logout/{{ user.id }}">Log out</a>
+                </li>
+                {% endif %}
+                </ul>
+            </div>
+        </nav>
+        <div id="title">
+            {{title}}
         </div>
-        <ul class="nav navbar-nav navbar-right">
-        {% if not user %}
-        <li><a href="/authorize">Link Spotify</a></li>
-        {% else %}
-        <li>
-            <img src="{{ user.profile_pic_url }}" alt="{{ user.display_name }}'s profile picture">
-            <span>{{ user.display_name }}</span>
-        </li>
-        <li>
-            <a href="/logout/{{ user.id }}">Log out</a>
-        </li>
-        {% endif %}
-        </ul>
-    </div>
-    </nav>
-    <div id="title">
-        <h2>{{title}}</h2>
-    </div>
-    <div id="content">
-        {% block content %}{% endblock %}
+        <div id="content">
+            {% block content %}{% endblock %}
+        </div>
+        <div id="flash_zone">
+            {% for category, message in get_flashed_messages(with_categories=True) %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
     </div>
     <footer>
-        {% for category, message in get_flashed_messages(with_categories=True) %}
-        <div class="alert alert-{{ category }}">{{ message }}</div>
-        {% endfor %}
-        Created By: Jack Winford
+        <span>created by: Jack Winford</span><br>
+        <span id="modified"></span>
     </footer>
 </body>
 <script src="https://unpkg.com/axios/dist/axios.js"></script>

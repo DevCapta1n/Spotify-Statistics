@@ -47,8 +47,8 @@ def update_top_artists(artists, new_user, rainge):
                 #If the json response artist already exists in the database for the given user
                 #and is not equal to the response artist, then replace the database artist with
                 #the json response artist.
-                database_artist = top_artist
-                db.session.add(database_artist)
+                db.session.delete(database_artist)
+                db.session.add(top_artist)
                 db.session.commit()
         else:
             db.session.add(top_artist)
@@ -66,7 +66,7 @@ def update_top_tracks(tracks, new_user, rainge):
         t_trk = TopTrack(
             rank = tracks.index(track) + 1,
             name = track['name'],
-            album_cover = track['album']['images'][2]['url'],
+            album_cover = track['album']['images'][1]['url'],
             artists = track['artists'],
             user_id = new_user.id,
             time_range = rainge
@@ -76,8 +76,8 @@ def update_top_tracks(tracks, new_user, rainge):
             if t_trk.rank != d_trk.rank or t_trk.album_cover != d_trk.album_cover or t_trk.artists != d_trk.artists:
 
                 #if d_trk exists and it is not a copy of t_trk, update it
-                d_trk = t_trk
-                db.session.add(d_trk)
+                db.session.delete(d_trk)
+                db.session.add(t_trk)
                 db.session.commit()
         else:
             db.session.add(t_trk)

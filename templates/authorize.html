@@ -1,9 +1,69 @@
-{% extends "base.html" %}
-{% block content %}
-    <p>Statify is a website which displays your Spotify top tracks and artists
-    by retrieving data from Spotify.</p>
-    <form method="POST" action="/authorize">
-        <label>See your stats: </label>
-        <button>Login with Spotify</button>
-    </form>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statify</title>
+    <script src="https://unpkg.com/jquery"></script>
+    <link rel="shortcut icon" href="static/images/favicon.ico">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body id="auth_body">
+    <div id="content-wrap">
+        <nav class="navbar navbar-expand">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <img src="/static/images/statifyFavicon.png" width="80" height="80" alt="logo">
+                    <span>STATIFY</span>
+                </div>
+                <ul class="nav navbar-nav navbar-right">
+                {% if not user %}
+                <li><a class="nav_link" href="/authorize">Link Your Spotify</a></li>
+                {% else %}
+                <li>
+                    <img src="{{ user.profile_pic_url }}" width="80" height="80" alt="{{ user.display_name }}'s profile picture">
+                    <span id="nav_name">{{ user.display_name }}</span>
+                </li>
+                <li>
+                    <a class="nav_link" href="/logout/{{ user.id }}">Log out</a>
+                </li>
+                {% endif %}
+                </ul>
+            </div>
+        </nav>
+        <div id="auth_title">
+            <span>{{title}}</span>
+        </div>
+        <div id="auth_content">
+            <span>By retrieving data from Spotify, Statify displays your top tracks and artists.</span>
+            <form method="POST" action="/authorize">
+                <label><span>See your stats:</span></label>
+                <button class="btn btn-danger">login with Spotify</button>
+            </form>
+            <h4><span id="login_title">Login to view your:</span></h4>
+            <ul>
+                <li class="facts"><span>Top ten artists</span></li>
+                <li class="facts"><span>Top ten tracks/songs</span></li>
+                <li class="facts"><span>Both being within one of three time ranges:</span></li>
+                <ul>
+                    <li class="facts"><span>All time (default)</span></li>
+                    <li class="facts"><span>Last six months</span></li>
+                    <li class="facts"><span>Last four weeks</span></li>
+                </ul>
+            </ul>
+        </div>
+        <div id="flash_zone">
+            {% for category, message in get_flashed_messages(with_categories=True) %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    </div>
+    <footer id="auth_footer">
+        <span>created by: Jack Winford</span><br>
+        <span id="modified"></span>
+    </footer>
+</body>
+<script src="https://unpkg.com/axios/dist/axios.js"></script>
+<script src="/static/script.js"></script>
+</html>

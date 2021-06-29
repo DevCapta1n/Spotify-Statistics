@@ -9,8 +9,6 @@ function time_range(evt) {
     const two_vals = [artist_range, track_range]
     let count = 0;
     for (val in two_vals) {
-        console.log(two_vals[val])
-        console.log(two_vals[val] == 'Six Months')
         if (two_vals[val] == 'Four Weeks') {
             if (count == 0) {
                 artist_range = 'short_term'
@@ -41,5 +39,39 @@ function time_range(evt) {
 
     $("#stats_home").load(url, data)
 }
+function lastModified() {
+    const dateObject = new Date(document.lastModified);
+
+    const month = dateObject.getUTCMonth() + 1;
+    const day = dateObject.getUTCDate();
+    const year = dateObject.getUTCFullYear();
+    calendarDate = `${month}/${day}/${year}`
+
+    $("#modified").html("last updated: " + calendarDate);
+}
+
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+}
+
+function backGroundImage() {
+    randomInt = getRandomInt(3);
+
+    if (randomInt == 0) {
+        $("body").css('background-image', 'url(/static/images/travis-yewell-F-B7kWlkxDQ-unsplash.jpg)')
+    } else if (randomInt == 1) {
+        $("body").css('background-image', 'url(/static/images/mick-haupt-vGXHIh3URzc-unsplash.jpg)')
+    } else if (randomInt == 2) {
+        $("body").css('background-image', 'url(/static/images/heidi-fin-H4fYXZ1hyco-unsplash.jpg)')
+    }
+    
+}
+if ($("#auth_body").length) {
+    //if the auth_body id exists then the page must be the authorization page
+    backGroundImage()
+}
+//backGroundImage()
+
+lastModified()
 
 $("#time_form").on("submit", time_range);

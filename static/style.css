@@ -2,6 +2,69 @@
 
 body {
     background-color: cornsilk;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    height: 100vh;
+    position: relative;
+}
+
+#content-wrap {
+    padding-top: 0px;
+    margin: 0px;
+    padding-bottom: 2.5rem;    /* Footer height */
+}
+
+/* nav bar */
+
+nav {
+    margin-top: 0px;
+    height: 80px;
+    background-color: rgb(0, 82, 0);
+}
+.navbar-header {
+    margin-top: 0px;
+}
+
+.navbar-header img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding-top: 0px;
+    margin: 0%;
+    background-color: white;
+}
+
+.navbar-header span {
+    font-family: "Lucida Console", "Courier New", monospace;
+    font-size: 60px;
+    padding-left: 100px;
+    margin: 0%;
+    height: 80px;
+    color: white;
+}
+
+.nav_link {
+    font-family: "Lucida Console", "Courier New", monospace;
+    color: white;
+    font-size: 25px;
+}
+
+.nav_link:hover {
+    color: white;
+}
+
+#nav_name {
+    font-family: "Lucida Console", "Courier New", monospace;
+    color: white;
+    font-size: 20px;
+    padding-left: 1em;
+    padding-right: 3em;
+}
+/* end nav bar styling */
+#auth_title span {
+    font-size: 4.5em;
+    font-weight: bold;
 }
 
 fieldset {
@@ -13,5 +76,29 @@ fieldset {
     padding-left: 0.75em;
     padding-right: 0.75em;
     border: 4px groove;
-
 }
+
+/* authorize page styling */
+#auth_footer span, #auth_title span, #auth_content span, #auth_content form label, #login_title, .facts span{
+    color: white;
+    background-color: rgb(0, 82, 0);
+    font-family: "Lucida Console", "Courier New", monospace;
+}
+
+#auth_content ul {
+    list-style-type: none;
+}
+
+#auth_content span {
+    font-size: 1.5em;
+}
+
+#auth_footer {
+    position: absolute;
+    height: 2.5rem;
+    bottom: 10px;
+    width: 100%;
+    text-align: center;
+    padding-bottom: 0px;
+}
+/* end authorize page styling */
