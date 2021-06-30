@@ -105,16 +105,16 @@ def display_stats(user_id):
         artist_range = request.form['artist_range']
         track_range = request.form['track_range']
 
-        artists = TopArtist.query.filter_by(user_id=user_id, time_range=artist_range).all().order_by(TopArtist.c.rank.asc())
-        tracks = TopTrack.query.filter_by(user_id=user_id, time_range=track_range).all().order_by(TopTrack.c.rank.asc())
+        artists = TopArtist.query.filter_by(user_id=user_id, time_range=artist_range).order_by(TopArtist.c.rank.asc()).all()
+        tracks = TopTrack.query.filter_by(user_id=user_id, time_range=track_range).order_by(TopTrack.c.rank.asc()).all()
         return render_template('stats.html',
                                 artists=artists,
                                 tracks=tracks,
                                 art_range=artist_range,
                                 trk_range=track_range)
 
-    artists = TopArtist.query.filter_by(user_id=user_id, time_range=artist_range).all().order_by(TopArtist.c.rank.asc())
-    tracks = TopTrack.query.filter_by(user_id=user_id, time_range=track_range).all().order_by(TopTrack.c.rank.asc())
+    artists = TopArtist.query.filter_by(user_id=user_id, time_range=artist_range).order_by(TopArtist.c.rank.asc()).all()
+    tracks = TopTrack.query.filter_by(user_id=user_id, time_range=track_range).order_by(TopTrack.c.rank.asc()).all()
     return render_template('home.html',
                             title=f"{curr_user.display_name}'s Spotify Statistics",
                             artists=artists,
