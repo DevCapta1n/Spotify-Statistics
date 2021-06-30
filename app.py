@@ -39,7 +39,7 @@ def authorize():
 
     redirect_uri = urlBase + 'login'
 
-    return redirect(f"https://accounts.spotify.com/authorize?client_id={client_id}&response_type=code&redirect_uri={redirect_uri}&scope=user-top-read")
+    return redirect(f"https://accounts.spotify.com/authorize?client_id={client_id}&response_type=code&redirect_uri={redirect_uri}&scope=user-top-read%20user-read-private%20user-read-email")
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -61,7 +61,8 @@ def login():
     # this request should return an access and refresh token for the authorized user
     token_url = "https://accounts.spotify.com/api/token"
     api_token_resp = requests.post(token_url, headers=auth_header, data=token_form, json=True)
-
+    print("/////////////////////////////")
+    print(api_token_resp.json())
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json"
     headers["Content-Type"] = "application/json"
@@ -69,6 +70,8 @@ def login():
 
     #through a request to the spotify api get the current users profile data
     curr_user = requests.get('https://api.spotify.com/v1/me', headers=headers)
+    print("/////////////////////////////////")
+    print(curr_user)
     curr_user = curr_user.json()
 
     new_user = update_user(curr_user)
