@@ -17,4 +17,4 @@ https://unsplash.com/photos/H4fYXZ1hyco
 and Heidi Fin on Unsplash
 
 The favicon is original by Jack Winford but does include an edited copy of 
-the spofiy icon.
+the Spotify icon.
