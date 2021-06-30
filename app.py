@@ -7,7 +7,7 @@ from requests.structures import CaseInsensitiveDict
 from update_database import update_user, update_top_artists, update_top_tracks
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///statify"
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://lfwbuuxgmvivqn:4ed5ce3116d79b5754f121df88588690108cd7b8c6abccf4c12e157cdbee7444@ec2-54-90-13-87.compute-1.amazonaws.com:5432/d5nalksmr9ge6b"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'ihaveasecret'
 
