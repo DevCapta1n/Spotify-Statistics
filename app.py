@@ -15,7 +15,7 @@ connect_db(app)
 db.create_all()
 
 client_id = "7c396993dafd46c3b30341981ec56217"
-urlBase = "http://127.0.0.1:5000/"
+urlBase = "https://statify-winford.herokuapp.com//"
 redirect_uri = urlBase + 'login'
 
 def base_64(text):
