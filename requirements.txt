@@ -1,5 +1,10 @@
 Flask==1.0.2
 Flask-SQLAlchemy==2.3.2
 ipython==7.0.1
-psycopg2-binary==2.7.5
+ipython-genutils==0.2.0
+Jinja2==2.10
+python3==3.9.5
+python3-dev==3.6.7
+libpq-dev==9.4.3
 SQLAlchemy==1.2.12
+psycopg2==2.9.1
