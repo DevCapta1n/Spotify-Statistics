@@ -128,9 +128,9 @@ def logout(user_id):
     """flash a logout message and redirect to the landing page"""
 
     curr_user = User.query.get_or_404(user_id)
-    user_artists = TopArtist.query.filter_by(user_id=user_id).all()
-    user_tracks = TopTrack.query.filter_by(user_id=user_id).all()
-    db.session.delete(curr_user, user_artists, user_tracks)
-    db.session.commit()
+    # user_artists = TopArtist.query.filter_by(user_id=user_id).all()
+    # user_tracks = TopTrack.query.filter_by(user_id=user_id).all()
+    # db.session.delete(curr_user, user_artists, user_tracks)
+    # db.session.commit()
     flash(f"{curr_user.display_name} has been logged out", 'success')
     return redirect('/')
