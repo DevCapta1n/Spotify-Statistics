@@ -73,14 +73,6 @@ def login():
     token = api_token_resp.json()['access_token']
     new_user = update_user(curr_user, token)
 
-    # update_top_artists(top_ten_artists, new_user, rainge)
-    url = f"https://api.spotify.com/v1/me/top/artists?time_range=long_term&limit=10&offset=0"
-    top_artists = requests.get(url, headers=headers)
-    print("/////////////////////////")
-    print(top_artists)
-    print("/////////////////////////")
-    # update_top_tracks(top_ten_tracks, new_user, rainge)
-
     return redirect(f'/statistics-home/{new_user.id}')
     
 @app.route('/statistics-home/<user_id>', methods=['POST', 'GET'])
@@ -91,8 +83,7 @@ def display_stats(user_id):
     artist_range = "long_term"
     track_range = "long_term"
     curr_user = User.query.get_or_404(user_id)
-    print("/////////////////////////")
-    print(curr_user.token)
+
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json"
     headers["Content-Type"] = "application/json"
@@ -104,9 +95,7 @@ def display_stats(user_id):
     #get the top ten artists and tracks for logged in user
     top_artists = requests.get(url, headers=headers)
     t_tracks = requests.get(track_url, headers=headers)
-    print("/////////////////////////")
-    print(top_artists)
-    print("/////////////////////////")
+
     top_ten_artists = top_artists.json()['items']
     top_ten_tracks = t_tracks.json()['items']
 
@@ -145,6 +134,7 @@ def display_profile(user_id):
     for there account"""
 
     return render_template('profile.html')
+
 @app.route('/logout/<user_id>')
 def logout(user_id):
     """flash a logout message and redirect to the landing page"""
