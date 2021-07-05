@@ -84,8 +84,7 @@ def login():
         
         top_ten_artists = top_artists.json()['items']
         top_ten_tracks = t_tracks.json()['items']
-        print(top_ten_artists)
-        print(top_ten_tracks)
+
         update_top_artists(top_ten_artists, new_user, rainge)
         
         update_top_tracks(top_ten_tracks, new_user, rainge)
