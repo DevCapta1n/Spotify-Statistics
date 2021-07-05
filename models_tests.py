@@ -3,7 +3,7 @@
 import os
 from unittest import TestCase
 import unittest
-from models import db, connect_db, User, TopArtist, TopTrack
+from models import db, connect_db, User
 
 os.environ['DATABASE_URL'] = 'postgresql://statify-test'
 
@@ -37,38 +37,38 @@ class StatifyModelTestCase(TestCase):
         db.session.rollback()
         return res
 
-    def test_top_tracks(self):
-        """test the TopTrack model"""
+    # def test_top_tracks(self):
+    #     """test the TopTrack model"""
 
-        tt = TopTrack(
-            rank = 1,
-            name = "abc song",
-            album_cover = "this just needs to be text",
-            artists = "[{'key':value},{'key':value,'another_key':value_two},{'key':value}]",
-            user_id = self.uid,
-            time_range = 'range'
-        )
+    #     tt = TopTrack(
+    #         rank = 1,
+    #         name = "abc song",
+    #         album_cover = "this just needs to be text",
+    #         artists = "[{'key':value},{'key':value,'another_key':value_two},{'key':value}]",
+    #         user_id = self.uid,
+    #         time_range = 'range'
+    #     )
 
-        db.session.add(tt)
-        db.session.commit()
+    #     db.session.add(tt)
+    #     db.session.commit()
 
-        self.assertEqual(tt.rank,1)
+    #     self.assertEqual(tt.rank,1)
 
-    def test_top_artists(self):
-        """test the TopArtist model"""
+    # def test_top_artists(self):
+    #     """test the TopArtist model"""
 
-        ta = TopArtist(
-            rank = 1,
-            artist_name = 'Drake',
-            image = "this just needs to be text",
-            user_id = self.uid,
-            time_range = 'forever'
-        )
+    #     ta = TopArtist(
+    #         rank = 1,
+    #         artist_name = 'Drake',
+    #         image = "this just needs to be text",
+    #         user_id = self.uid,
+    #         time_range = 'forever'
+    #     )
 
-        db.session.add(ta)
-        db.session.commit()
+    #     db.session.add(ta)
+    #     db.session.commit()
 
-        self.assertEqual(ta.artist_name, 'Drake')
+    #     self.assertEqual(ta.artist_name, 'Drake')
 
 if __name__ == '__main__':
     unittest.main()

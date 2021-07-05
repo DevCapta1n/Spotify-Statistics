@@ -1,8 +1,8 @@
 """functions for updating the statify database with data from the spotify api"""
 
-from models import db, connect_db, User, TopArtist, TopTrack
+from models import db, connect_db, User
 
-def update_user(user_json):
+def update_user(user_json, token):
     """update, create, or do nothing, then return the passed in user"""
 
     target_user = User.query.filter_by(display_name=user_json['display_name']).first()
@@ -12,7 +12,8 @@ def update_user(user_json):
         #procede if the target_user does not exist in the database
         new_user = User(
             display_name = user_json['display_name'],
-            profile_pic_url = user_json['images'][0]['url']
+            profile_pic_url = user_json['images'][0]['url'],
+            token = token
         )
         db.session.add(new_user)
         db.session.commit()
@@ -23,61 +24,71 @@ def update_user(user_json):
 
         #if the user exists but their profile picture is out of date, update it
         target_user.profile_pic_url = user_json['images'][0]['url']
+        db.session.add(target_user)
+        db.session.commit()
+
+    if not User.query.filter_by(token=token).first():
+
+        #an existing user's token should be out of date every session
+        #so it needs to be updated
+        target_user.token = token
+        db.session.add(target_user)
+        db.session.commit()
 
     return target_user
 
-def update_top_artists(artists, new_user, rainge):
-    """accepting a list of artist data in json format update the top_artists table accordingly"""
+# def update_top_artists(artists, new_user, rainge):
+#     """accepting a list of artist data in json format update the top_artists table accordingly"""
 
-    for artist in artists:
+#     for artist in artists:
 
-        database_artist = TopArtist.query.filter_by(artist_name = artist['name'], user_id = new_user.id, time_range = rainge).first()
+#         database_artist = TopArtist.query.filter_by(artist_name = artist['name'], user_id = new_user.id, time_range = rainge).first()
 
-        top_artist = TopArtist(
-            rank = artists.index(artist) + 1,
-            artist_name = artist['name'],
-            image = artist['images'][2]['url'],
-            user_id = new_user.id,
-            time_range = rainge
-        )
+#         top_artist = TopArtist(
+#             rank = artists.index(artist) + 1,
+#             artist_name = artist['name'],
+#             image = artist['images'][2]['url'],
+#             user_id = new_user.id,
+#             time_range = rainge
+#         )
         
-        if database_artist:
-            if top_artist.rank != database_artist.rank or top_artist.image != database_artist.image:
+#         if database_artist:
+#             if top_artist.rank != database_artist.rank or top_artist.image != database_artist.image:
 
-                #If the json response artist already exists in the database for the given user
-                #and is not equal to the response artist, then replace the database artist with
-                #the json response artist.
-                db.session.delete(database_artist)
-                db.session.add(top_artist)
-                db.session.commit()
-        else:
-            db.session.add(top_artist)
-            db.session.commit()
+#                 #If the json response artist already exists in the database for the given user
+#                 #and is not equal to the response artist, then replace the database artist with
+#                 #the json response artist.
+#                 db.session.delete(database_artist)
+#                 db.session.add(top_artist)
+#                 db.session.commit()
+#         else:
+#             db.session.add(top_artist)
+#             db.session.commit()
 
-def update_top_tracks(tracks, new_user, rainge):
-    """accepting a list of track data in json format update the top_tracks table accordingly"""
+# def update_top_tracks(tracks, new_user, rainge):
+#     """accepting a list of track data in json format update the top_tracks table accordingly"""
 
-    for track in tracks:
+#     for track in tracks:
 
-        d_trk = TopTrack.query.filter_by(name = track['name'], user_id = new_user.id, time_range = rainge).first()
+#         d_trk = TopTrack.query.filter_by(name = track['name'], user_id = new_user.id, time_range = rainge).first()
 
-        t_trk = TopTrack(
-            rank = tracks.index(track) + 1,
-            name = track['name'],
-            album_cover = track['album']['images'][1]['url'],
-            artists = track['artists'],
-            user_id = new_user.id,
-            time_range = rainge
-        )
+#         t_trk = TopTrack(
+#             rank = tracks.index(track) + 1,
+#             name = track['name'],
+#             album_cover = track['album']['images'][1]['url'],
+#             artists = track['artists'],
+#             user_id = new_user.id,
+#             time_range = rainge
+#         )
 
-        if d_trk:
+#         if d_trk:
 
-            if t_trk.rank != d_trk.rank or t_trk.album_cover != d_trk.album_cover or t_trk.artists != d_trk.artists:
+#             if t_trk.rank != d_trk.rank or t_trk.album_cover != d_trk.album_cover or t_trk.artists != d_trk.artists:
 
-                #if d_trk exists and it is not a copy of t_trk, update it
-                db.session.delete(d_trk)
-                db.session.add(t_trk)
-                db.session.commit()
-        else:
-            db.session.add(t_trk)
-            db.session.commit()
+#                 #if d_trk exists and it is not a copy of t_trk, update it
+#                 db.session.delete(d_trk)
+#                 db.session.add(t_trk)
+#                 db.session.commit()
+#         else:
+#             db.session.add(t_trk)
+#             db.session.commit()

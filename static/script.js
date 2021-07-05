@@ -15,7 +15,7 @@ function time_range(evt) {
 
     const two_vals = [artist_range, track_range]
     let count = 0;
-    for (val in two_vals) {
+    for (const val in two_vals) {
         if (two_vals[val] == 'Four Weeks') {
             if (count == 0) {
                 artist_range = 'short_term'
@@ -57,7 +57,7 @@ function lastModified() {
     const month = dateObject.getUTCMonth() + 1;
     const day = dateObject.getUTCDate();
     const year = dateObject.getUTCFullYear();
-    calendarDate = `${month}/${day}/${year}`
+    const calendarDate = `${month}/${day}/${year}`
 
     $("#modified").html("last updated: " + calendarDate);
 }
@@ -75,7 +75,7 @@ function backGroundImage() {
      * Select one of three background images and set that image as the background
      * of the page body. (Credits for images in README.md)
      */
-    randomInt = getRandomInt(3);
+    const randomInt = getRandomInt(3);
 
     if (randomInt == 0) {
         $("body").css('background-image', 'url(/static/images/travis-yewell-F-B7kWlkxDQ-unsplash.jpg)')
@@ -95,3 +95,12 @@ if ($("#auth_body").length) {
 lastModified()
 
 $("#time_form").on("submit", time_range);
+
+$('#auth_form').on("submit", function() {
+    $('#content-wrap').css('display','none')
+    $('#auth_footer').css('display','none')
+    $('.loader').css('display','block')
+    $('#auth_body').css('display','flex')
+    $('#auth_body').css('justify-content','center')
+    $('#auth_body').css('align-items','center')
+})

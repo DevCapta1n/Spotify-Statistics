@@ -1,10 +1,10 @@
-from flask import Flask, request, redirect, render_template, flash
-from models import db, connect_db, User, TopArtist, TopTrack
+from flask import Flask, request, redirect, render_template, flash, g
+from models import db, connect_db, User
 import json
 import requests
 import base64
 from requests.structures import CaseInsensitiveDict
-from update_database import update_user, update_top_artists, update_top_tracks
+from update_database import update_user
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///statify"
@@ -70,24 +70,16 @@ def login():
     #through a request to the spotify api get the current users profile data
     curr_user = requests.get('https://api.spotify.com/v1/me', headers=headers)
     curr_user = curr_user.json()
+    token = api_token_resp.json()['access_token']
+    new_user = update_user(curr_user, token)
 
-    new_user = update_user(curr_user)
-
-    ranges = ['long_term', 'medium_term', 'short_term']
-    for rainge in ranges:
-        url = f"https://api.spotify.com/v1/me/top/artists?time_range={rainge}&limit=10&offset=0"
-        track_url = f"https://api.spotify.com/v1/me/top/tracks?time_range={rainge}&limit=10&offset=0"
-        
-        #get the top ten artists and tracks for logged in user
-        top_artists = requests.get(url, headers=headers)
-        t_tracks = requests.get(track_url, headers=headers)
-        
-        top_ten_artists = top_artists.json()['items']
-        top_ten_tracks = t_tracks.json()['items']
-
-        update_top_artists(top_ten_artists, new_user, rainge)
-        
-        update_top_tracks(top_ten_tracks, new_user, rainge)
+    # update_top_artists(top_ten_artists, new_user, rainge)
+    url = f"https://api.spotify.com/v1/me/top/artists?time_range=long_term&limit=10&offset=0"
+    top_artists = requests.get(url, headers=headers)
+    print("/////////////////////////")
+    print(top_artists)
+    print("/////////////////////////")
+    # update_top_tracks(top_ten_tracks, new_user, rainge)
 
     return redirect(f'/statistics-home/{new_user.id}')
     
@@ -99,30 +91,60 @@ def display_stats(user_id):
     artist_range = "long_term"
     track_range = "long_term"
     curr_user = User.query.get_or_404(user_id)
+    print("/////////////////////////")
+    print(curr_user.token)
+    headers = CaseInsensitiveDict()
+    headers["Accept"] = "application/json"
+    headers["Content-Type"] = "application/json"
+    headers["Authorization"] = f"Bearer {curr_user.token}"
+
+    url = f"https://api.spotify.com/v1/me/top/artists?time_range={artist_range}&limit=10&offset=0"
+    track_url = f"https://api.spotify.com/v1/me/top/tracks?time_range={track_range}&limit=10&offset=0"
+
+    #get the top ten artists and tracks for logged in user
+    top_artists = requests.get(url, headers=headers)
+    t_tracks = requests.get(track_url, headers=headers)
+    print("/////////////////////////")
+    print(top_artists)
+    print("/////////////////////////")
+    top_ten_artists = top_artists.json()['items']
+    top_ten_tracks = t_tracks.json()['items']
 
     if request.method == 'POST':
 
         artist_range = request.form['artist_range']
         track_range = request.form['track_range']
 
-        artists = TopArtist.query.filter_by(user_id=user_id, time_range=artist_range).all()
-        tracks = TopTrack.query.filter_by(user_id=user_id, time_range=track_range).all()
+        url = f"https://api.spotify.com/v1/me/top/artists?time_range={artist_range}&limit=10&offset=0"
+        track_url = f"https://api.spotify.com/v1/me/top/tracks?time_range={track_range}&limit=10&offset=0"
+
+        #get the top ten artists and tracks for logged in user
+        top_artists = requests.get(url, headers=headers)
+        t_tracks = requests.get(track_url, headers=headers)
+
+        top_ten_artists = top_artists.json()['items']
+        top_ten_tracks = t_tracks.json()['items']
+
         return render_template('stats.html',
-                                artists=artists,
-                                tracks=tracks,
+                                artists=top_ten_artists,
+                                tracks=top_ten_tracks,
                                 art_range=artist_range,
                                 trk_range=track_range)
 
-    artists = TopArtist.query.filter_by(user_id=user_id, time_range=artist_range).all()
-    tracks = TopTrack.query.filter_by(user_id=user_id, time_range=track_range).all()
     return render_template('home.html',
                             title=f"{curr_user.display_name}'s Spotify Statistics",
-                            artists=artists,
-                            tracks=tracks,
+                            artists=top_ten_artists,
+                            tracks=top_ten_tracks,
                             user=curr_user,
                             art_range=artist_range,
                             trk_range=track_range)
 
+@app.route('/profile/<user_id>', methods=['POST', 'GET'])
+def display_profile(user_id):
+    """display the profile page for a user where they can view and edit all the information
+    for there account"""
+
+    return render_template('profile.html')
 @app.route('/logout/<user_id>')
 def logout(user_id):
     """flash a logout message and redirect to the landing page"""

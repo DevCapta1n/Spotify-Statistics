@@ -11,8 +11,8 @@ user = {'display_name': 'jackwinford', 'external_urls': {'spotify': 'https://ope
 import os
 from unittest import TestCase
 import unittest
-from models import db, User, TopArtist, TopTrack
-from update_database import update_user, update_top_artists, update_top_tracks
+from models import db, User
+from update_database import update_user
 
 os.environ['DATABASE_URL'] = 'postgresql://statify-test'
 
@@ -47,23 +47,23 @@ class UpdateDatabaseTestCase(TestCase):
         self.assertEqual(new_user.display_name, 'jackwinford')
         self.assertEqual(new_user.profile_pic_url, 'https://i.scdn.co/image/ab6775700000ee851b1fe4b55885c1747c550445')
 
-    def test_update_tracks(self):
-        """test if the update tracks function works"""
+    # def test_update_tracks(self):
+    #     """test if the update tracks function works"""
 
-        update_top_tracks(tracks, self.new_user, 'rainge')
+    #     update_top_tracks(tracks, self.new_user, 'rainge')
 
-        tracks_data = TopTrack.query.all()
+    #     tracks_data = TopTrack.query.all()
 
-        self.assertEqual(len(tracks_data), 10)
+    #     self.assertEqual(len(tracks_data), 10)
 
-    def test_update_artists(self):
-        """test if the update artists function works"""
+    # def test_update_artists(self):
+    #     """test if the update artists function works"""
 
-        update_top_artists(artists, self.new_user, 'rainge')
+    #     update_top_artists(artists, self.new_user, 'rainge')
 
-        artists_data = TopArtist.query.all()
+    #     artists_data = TopArtist.query.all()
 
-        self.assertEqual(len(artists_data), 10)
+    #     self.assertEqual(len(artists_data), 10)
 
 if __name__ == '__main__':
     unittest.main()

@@ -3,7 +3,7 @@
 import os
 from unittest import TestCase
 import unittest
-from models import db, connect_db, User, TopArtist, TopTrack
+from models import db, connect_db, User
 
 os.environ['DATABASE_URL'] = 'postgresql://statify-test'
 

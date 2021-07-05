@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body id="auth_body">
+    <div class="loader"></div>
     <div id="content-wrap">
         <nav class="navbar navbar-expand">
             <div class="container-fluid">
@@ -21,10 +22,10 @@
                 {% if not user %}
                 <li><a class="nav_link" href="/authorize">Link Your Spotify</a></li>
                 {% else %}
-                <li>
+                <li><a href="/profile/{{ user.id }}">
                     <img src="{{ user.profile_pic_url }}" width="80" height="80" alt="{{ user.display_name }}'s profile picture">
                     <span id="nav_name">{{ user.display_name }}</span>
-                </li>
+                </a></li>
                 <li>
                     <a class="nav_link" href="/logout/{{ user.id }}">Log out</a>
                 </li>
@@ -37,7 +38,7 @@
         </div>
         <div id="auth_content">
             <span>By retrieving data from Spotify, Statify displays your top tracks and artists.</span>
-            <form method="POST" action="/authorize">
+            <form method="POST" action="/authorize" id="auth_form">
                 <label><span>See your stats:</span></label>
                 <button class="btn btn-danger">login with Spotify</button>
             </form>
