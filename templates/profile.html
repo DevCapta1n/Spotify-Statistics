@@ -9,8 +9,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/style.css">
 </head>
-<body id="auth_body">
-    <div class="loader"></div>
+<body>
     <div id="content-wrap">
         <nav class="navbar navbar-expand">
             <div class="container-fluid">
@@ -18,14 +17,17 @@
                     <img src="/static/images/statifyFavicon.png" width="80" height="80" alt="logo">
                     <span>STATIFY</span>
                 </div>
-                <ul class="nav navbar-nav navbar-right">
+                <ul id="nav_list" class="nav navbar-nav navbar-right">
                 {% if not user %}
                 <li><a class="nav_link" href="/authorize">Link Your Spotify</a></li>
                 {% else %}
-                <li><a href="/profile/{{ user.id }}">
+                <li>
                     <img src="{{ user.profile_pic_url }}" width="80" height="80" alt="{{ user.display_name }}'s profile picture">
-                    <span id="nav_name">{{ user.display_name }}</span>
-                </a></li>
+                    <a class="nav_link" href="/profile/{{ user.id }}">{{ user.display_name }}</a>
+                </li>
+                <li>
+                    <a class="nav_link" href="/statistics-home/{{ user.id }}">Stats</a>
+                </li>
                 <li>
                     <a class="nav_link" href="/logout/{{ user.id }}">Log out</a>
                 </li>
@@ -33,26 +35,30 @@
                 </ul>
             </div>
         </nav>
-        <div id="auth_title">
-            <span>{{title}}</span>
+        <div id="title">
+            <h1>Your Profile</h1>
         </div>
-        <div id="auth_content">
-            <span>By retrieving data from Spotify, Statify displays your top tracks and artists.</span>
-            <form method="POST" action="/authorize" id="auth_form">
-                <label><span>See your stats:</span></label>
-                <button class="btn btn-danger">login with Spotify</button>
-            </form>
-            <h4><span id="login_title">Login to view your:</span></h4>
-            <ul>
-                <li class="facts"><span>Top ten artists</span></li>
-                <li class="facts"><span>Top ten tracks/songs</span></li>
-                <li class="facts"><span>Both being within one of three time ranges:</span></li>
-                <ul>
-                    <li class="facts"><span>All time (default)</span></li>
-                    <li class="facts"><span>Last six months</span></li>
-                    <li class="facts"><span>Last four weeks</span></li>
-                </ul>
-            </ul>
+        <div id="profile_content">
+            <div class="row">
+                <div class="col-4">
+                    <img id="profile_page_pic" src="{{ user.profile_pic_url }}" width="250" height="250" alt="{{ user.display_name }}'s profile picture">
+                </div>
+                <div class="col-2"></div>
+                <div class="col-5" id="right_profile_div">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><span>Display name: {{ user.display_name }}</span></li>
+                        <li class="list-group-item"><span>Country: {{ user.country }}</span></li>
+                        <li class="list-group-item"><a href="{{ user.spotify_link }}">View Your Spotify Page</a></li>
+                        <li class="list-group-item"><span>You have {{ user.followers }} followers on Spotify</span></li>
+                        <li class="list-group-item">
+                            <form id="profile_form">
+                                <button class="btn btn-lrg btn-warning" role="button">Edit</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-1"></div>
+            </div>
         </div>
         <div id="flash_zone">
             {% for category, message in get_flashed_messages(with_categories=True) %}
@@ -60,7 +66,7 @@
             {% endfor %}
         </div>
     </div>
-    <footer id="auth_footer">
+    <footer id="home_footer">
         <span>created by: Jack Winford</span><br>
         <span id="modified"></span>
     </footer>

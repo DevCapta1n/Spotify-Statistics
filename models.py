@@ -9,57 +9,39 @@ db = SQLAlchemy()
 
 DEFAULT_IMAGE_URL = "https://www.freeiconspng.com/uploads/icon-user-blue-symbol-people-person-generic--public-domain--21.png"
 
-class TextPickleType(TypeDecorator):
-    """ a custom column type for storing a json string of multiple artists for
-    a single song"""
-
-    impl = VARCHAR
-
-    def process_bind_param(self, value, dialect):
-        if value is not None:
-            value = json.dumps(value)
-        return value
-
-    def process_result_value(self, value, dialect):
-        if value is not None:
-            value = json.loads(value)
-        return value
-
 class User(db.Model):
     """user of the website"""
 
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
-    display_name = db.Column(db.Text, nullable=False)
+    display_name = db.Column(db.String(30), nullable=False, unique=True)
     profile_pic_url = db.Column(db.Text, nullable=False)
+    token = db.Column(db.Text, nullable=False)
+    country = db.Column(db.Text, nullable=False)
+    spotify_link = db.Column(db.Text, nullable=False)
+    followers = db.Column(db.Integer, nullable=False)
 
-    top_artists = db.relationship("TopArtist", backref="user", cascade="all, delete-orphan")
-    top_tracks = db.relationship("TopTrack", backref="user", cascade="all, delete-orphan")
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'display_name': self.display_name,
+            'profile_pic_url': self.profile_pic_url,
+            'token': self.token,
+            'country': self.country,
+            'spotify_link': self.spotify_link,
+            'followers': self.followers
+        }
 
-class TopTrack(db.Model):
-    """the top tracks for users with a ranking column"""
+class FavoriteGenre(db.Model):
+    """a table listing information about a genre including its rank and related user"""
 
-    __tablename__ = "top_tracks"
+    __tablename__ = "favorite_genres"
 
     id = db.Column(db.Integer, primary_key=True)
     rank = db.Column(db.Integer, nullable=False)
-    name = db.Column(db.Text, nullable=False)
-    album_cover = db.Column(db.Text, nullable=False)
-    artists = db.Column(db.PickleType, nullable=False)
-    time_range = db.Column(db.Text, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-
-class TopArtist(db.Model):
-    """a table which holds information about an artist along with their ranking for user"""
-
-    __tablename__ = "top_artists"
-
-    id = db.Column(db.Integer, primary_key=True)
-    rank = db.Column(db.Integer, nullable=False)
-    artist_name = db.Column(db.Text, nullable=False)
-    image = db.Column(db.Text, nullable=False)
-    time_range = db.Column(db.Text, nullable=False)
+    genre_name = db.Column(db.Text, nullable=False)
+    icon = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
 def connect_db(app):

@@ -15,7 +15,7 @@ function time_range(evt) {
 
     const two_vals = [artist_range, track_range]
     let count = 0;
-    for (val in two_vals) {
+    for (const val in two_vals) {
         if (two_vals[val] == 'Four Weeks') {
             if (count == 0) {
                 artist_range = 'short_term'
@@ -57,7 +57,7 @@ function lastModified() {
     const month = dateObject.getUTCMonth() + 1;
     const day = dateObject.getUTCDate();
     const year = dateObject.getUTCFullYear();
-    calendarDate = `${month}/${day}/${year}`
+    const calendarDate = `${month}/${day}/${year}`
 
     $("#modified").html("last updated: " + calendarDate);
 }
@@ -75,7 +75,7 @@ function backGroundImage() {
      * Select one of three background images and set that image as the background
      * of the page body. (Credits for images in README.md)
      */
-    randomInt = getRandomInt(3);
+    const randomInt = getRandomInt(3);
 
     if (randomInt == 0) {
         $("body").css('background-image', 'url(/static/images/travis-yewell-F-B7kWlkxDQ-unsplash.jpg)')
@@ -95,3 +95,52 @@ if ($("#auth_body").length) {
 lastModified()
 
 $("#time_form").on("submit", time_range);
+
+$('#auth_form').on("submit", function() {
+    $('#content-wrap').css('display','none')
+    $('#auth_footer').css('display','none')
+    $('.loader').css('display','block')
+    $('#auth_body').css('display','flex')
+    $('#auth_body').css('justify-content','center')
+    $('#auth_body').css('align-items','center')
+})
+
+$('#profile_form').on("submit", async function(evt) {
+    evt.preventDefault()
+    let user = await axios.get('http://127.0.0.1:5000/get-user')
+    user = user.data
+    $('#profile_content').html(`
+    <form action="/profile/${user.id}" method="POST">
+    <div>
+        <div class="form_element">
+            <span>Leave any field blank to let it remain unchanged</span>
+        </div>
+        <div class="form_element form-group">
+            <label for="picture">The URL of your profile picture</label>
+            <input class="form-control" name="picture" type="text" placeholder="${user.profile_pic_url}">
+        </div>
+        <div class="form_element form-group">
+            <label for="username">Display Name:</label>
+            <input class="skinny form-control" name="username" type="text" placeholder="${user.display_name}">
+            <small id="passwordHelpBlock" class="form-text text-muted">
+                Limit of thirty characters
+            </small>
+        </div>
+        <div class="form_element form-group">
+            <label for="country">Country:</label>
+            <input class="skinny form-control" name="country" type="text" minlength="2" maxlength="2" size="2" placeholder="${user.country}">
+            <small id="passwordHelpBlock" class="form-text text-muted">
+                Must be two characters
+            </small>
+        </div>
+        <div class="form_element">
+            <button class="btn btn-warning" role="button">Edit</button>
+        </div>
+    </div>
+    </form>
+    `)
+})
+
+// $('#edit_form').on("submit", function() {
+
+// })

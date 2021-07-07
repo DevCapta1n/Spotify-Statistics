@@ -1,10 +1,10 @@
-from flask import Flask, request, redirect, render_template, flash
-from models import db, connect_db, User, TopArtist, TopTrack
+from flask import Flask, request, redirect, render_template, flash, session, jsonify
+from models import db, connect_db, User
 import json
 import requests
 import base64
 from requests.structures import CaseInsensitiveDict
-from update_database import update_user, update_top_artists, update_top_tracks
+from update_database import update_user
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://lfwbuuxgmvivqn:4ed5ce3116d79b5754f121df88588690108cd7b8c6abccf4c12e157cdbee7444@ec2-54-90-13-87.compute-1.amazonaws.com:5432/d5nalksmr9ge6b"
@@ -24,6 +24,19 @@ def base_64(text):
     text_as_bytes = text.encode('ascii')
     text_as_base64 = base64.b64encode(text_as_bytes)
     return text_as_base64.decode("ascii")
+
+def fix_short_list(art_list, trk_list):
+    """if the number of artists or tracks returned by the api is less than
+    ten then add an item to the list telling the user they don't have enough
+    data"""
+
+    if len(art_list) < 10:
+        art_list.append({'images': [{},{},{'url':'/static/images/noDataImg.jpg'}], 'name': 'You do not have ten artists in your history'})
+    if len(trk_list) < 10:
+        trk_list.append({'album': {'images': [{},{'url':'/static/images/noDataImg.jpg'}]},
+                                'name': 'You do not have ten tracks in your history',
+                                'artists': [{'name':'no artist'}]})
+    return [art_list, trk_list]
 
 @app.route('/')
 def root():
@@ -70,25 +83,9 @@ def login():
     #through a request to the spotify api get the current users profile data
     curr_user = requests.get('https://api.spotify.com/v1/me', headers=headers)
     curr_user = curr_user.json()
-
-    new_user = update_user(curr_user)
-
-    ranges = ['long_term', 'medium_term', 'short_term']
-    for rainge in ranges:
-        url = f"https://api.spotify.com/v1/me/top/artists?time_range={rainge}&limit=10&offset=0"
-        track_url = f"https://api.spotify.com/v1/me/top/tracks?time_range={rainge}&limit=10&offset=0"
-        
-        #get the top ten artists and tracks for logged in user
-        top_artists = requests.get(url, headers=headers)
-        t_tracks = requests.get(track_url, headers=headers)
-        
-        top_ten_artists = top_artists.json()['items']
-        top_ten_tracks = t_tracks.json()['items']
-
-        update_top_artists(top_ten_artists, new_user, rainge)
-        
-        update_top_tracks(top_ten_tracks, new_user, rainge)
-
+    token = api_token_resp.json()['access_token']
+    new_user = update_user(curr_user, token)
+    session['user'] = new_user.id
     return redirect(f'/statistics-home/{new_user.id}')
     
 @app.route('/statistics-home/<user_id>', methods=['POST', 'GET'])
@@ -100,28 +97,66 @@ def display_stats(user_id):
     track_range = "long_term"
     curr_user = User.query.get_or_404(user_id)
 
+    headers = CaseInsensitiveDict()
+    headers["Accept"] = "application/json"
+    headers["Content-Type"] = "application/json"
+    headers["Authorization"] = f"Bearer {curr_user.token}"
+
+    url = f"https://api.spotify.com/v1/me/top/artists?time_range={artist_range}&limit=10&offset=0"
+    track_url = f"https://api.spotify.com/v1/me/top/tracks?time_range={track_range}&limit=10&offset=0"
+
+    #get the top ten artists and tracks for logged in user
+    top_artists = requests.get(url, headers=headers)
+    t_tracks = requests.get(track_url, headers=headers)
+
+    fixed_lists = fix_short_list(top_artists.json()['items'], t_tracks.json()['items'])
+    top_ten_artists = fixed_lists[0]
+    top_ten_tracks = fixed_lists[1]
+
     if request.method == 'POST':
 
         artist_range = request.form['artist_range']
         track_range = request.form['track_range']
 
-        artists = TopArtist.query.filter_by(user_id=user_id, time_range=artist_range).order_by(TopArtist.rank.asc()).all()
-        tracks = TopTrack.query.filter_by(user_id=user_id, time_range=track_range).order_by(TopTrack.rank.asc()).all()
+        url = f"https://api.spotify.com/v1/me/top/artists?time_range={artist_range}&limit=10&offset=0"
+        track_url = f"https://api.spotify.com/v1/me/top/tracks?time_range={track_range}&limit=10&offset=0"
+
+        #get the top ten artists and tracks for logged in user
+        top_artists = requests.get(url, headers=headers)
+        t_tracks = requests.get(track_url, headers=headers)
+
+        fixed_lists = fix_short_list(top_artists.json()['items'], t_tracks.json()['items'])
+        top_ten_artists = fixed_lists[0]
+        top_ten_tracks = fixed_lists[1]
         return render_template('stats.html',
-                                artists=artists,
-                                tracks=tracks,
+                                artists=top_ten_artists,
+                                tracks=top_ten_tracks,
                                 art_range=artist_range,
                                 trk_range=track_range)
 
-    artists = TopArtist.query.filter_by(user_id=user_id, time_range=artist_range).order_by(TopArtist.rank.asc()).all()
-    tracks = TopTrack.query.filter_by(user_id=user_id, time_range=track_range).order_by(TopTrack.rank.asc()).all()
     return render_template('home.html',
                             title=f"{curr_user.display_name}'s Spotify Statistics",
-                            artists=artists,
-                            tracks=tracks,
+                            artists=top_ten_artists,
+                            tracks=top_ten_tracks,
                             user=curr_user,
                             art_range=artist_range,
                             trk_range=track_range)
+
+@app.route('/profile/<user_id>', methods=['POST', 'GET'])
+def display_profile(user_id):
+    """display the profile page for a user where they can view and edit all the information
+    for there account"""
+
+    curr_user = User.query.get_or_404(user_id)
+    if request.method == 'POST':
+
+        curr_user.profile_pic_url = request.form['picture'] or curr_user.profile_pic_url
+        curr_user.display_name = request.form['username'] or curr_user.display_name
+        curr_user.country = request.form['country'] or curr_user.country
+        db.session.add(curr_user)
+        db.session.commit()
+    return render_template('profile.html',
+                            user=curr_user)
 
 @app.route('/logout/<user_id>')
 def logout(user_id):
@@ -134,3 +169,8 @@ def logout(user_id):
     # db.session.commit()
     flash(f"{curr_user.display_name} has been logged out", 'success')
     return redirect('/')
+
+@app.route('/get-user')
+def get_user():
+    curr_user = User.query.get_or_404(session['user'])
+    return jsonify(curr_user.to_dict())
