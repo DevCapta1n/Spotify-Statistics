@@ -7,7 +7,7 @@ from requests.structures import CaseInsensitiveDict
 from update_database import update_user
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://lfwbuuxgmvivqn:4ed5ce3116d79b5754f121df88588690108cd7b8c6abccf4c12e157cdbee7444@ec2-54-90-13-87.compute-1.amazonaws.com:5432/d5nalksmr9ge6b"
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://dntodqqmwqhnbp:07d80f8160de44f0ef95e54e8a29bb9aa40b50035348368e811975314ecfaff6@ec2-23-23-164-251.compute-1.amazonaws.com:5432/db13kla797kgl"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'ihaveasecret'
 
@@ -163,14 +163,12 @@ def logout(user_id):
     """flash a logout message and redirect to the landing page"""
 
     curr_user = User.query.get_or_404(user_id)
-    # user_artists = TopArtist.query.filter_by(user_id=user_id).all()
-    # user_tracks = TopTrack.query.filter_by(user_id=user_id).all()
-    # db.session.delete(curr_user, user_artists, user_tracks)
-    # db.session.commit()
     flash(f"{curr_user.display_name} has been logged out", 'success')
     return redirect('/')
 
 @app.route('/get-user')
 def get_user():
+    """return a json representation of the current user's user object"""
+
     curr_user = User.query.get_or_404(session['user'])
     return jsonify(curr_user.to_dict())
