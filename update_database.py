@@ -5,7 +5,7 @@ from models import db, connect_db, User
 def update_user(user_json, token):
     """update, create, or do nothing, then return the passed in user"""
 
-    target_user = User.query.filter_by(display_name=user_json['external_urls']['spotify']).first()
+    target_user = User.query.filter_by(spotify_link=user_json['external_urls']['spotify']).first()
 
     if not target_user:
         try:
@@ -36,7 +36,7 @@ def update_user(user_json, token):
         db.session.add(target_user)
         db.session.commit()
 
-    if not User.query.filter_by(display_name=user_json['external_urls']['spotify'],followers=user_json['followers']['total']).first():
+    if not User.query.filter_by(spotify_link=user_json['external_urls']['spotify'],followers=user_json['followers']['total']).first():
         
         target_user.followers = user_json['followers']['total']
         db.session.add(target_user)
