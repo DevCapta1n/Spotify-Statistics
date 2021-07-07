@@ -47,17 +47,8 @@ class StatifyAppTestCase(TestCase):
             resp = c.get("/")
 
             self.assertIn("Welcome to Statify", str(resp.data))
-            self.assertIn("Login with Spotify", str(resp.data))
-            self.assertIn("Created By: Jack Winford", str(resp.data))
-
-    def test_stats_home(self):
-        """test that the /statistics-home page is displaying the home page correctly"""
-        with self.client as c:
-            resp = c.get("/statistics-home/94566")
-
-            self.assertIn("test_user", str(resp.data))
-            self.assertIn("Select A Time Range for Artists", str(resp.data))
-            self.assertIn("Statify", str(resp.data))
+            self.assertIn("login with Spotify", str(resp.data))
+            self.assertIn("created by: Jack Winford", str(resp.data))
 
 if __name__ == '__main__':
     unittest.main()
