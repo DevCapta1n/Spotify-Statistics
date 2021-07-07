@@ -8,19 +8,27 @@ def update_user(user_json, token):
     target_user = User.query.filter_by(display_name=user_json['display_name']).first()
 
     if not target_user:
+        try:
+            #some responses may include a country key and value pair
+            country = user_json['country']
+        except KeyError:
+            country = 'US'
 
         #procede if the target_user does not exist in the database
         new_user = User(
             display_name = user_json['display_name'],
             profile_pic_url = user_json['images'][0]['url'],
-            token = token
+            token = token,
+            country = country,
+            spotify_link = user_json['external_urls']['spotify'],
+            followers = user_json['followers']['total']
         )
         db.session.add(new_user)
         db.session.commit()
 
         return new_user
 
-    if not User.query.filter_by(profile_pic_url=user_json['images'][0]['url']).first():
+    if not User.query.filter_by(display_name=user_json['display_name'],profile_pic_url=user_json['images'][0]['url']).first():
 
         #if the user exists but their profile picture is out of date, update it
         target_user.profile_pic_url = user_json['images'][0]['url']
@@ -32,6 +40,12 @@ def update_user(user_json, token):
         #an existing user's token should be out of date every session
         #so it needs to be updated
         target_user.token = token
+        db.session.add(target_user)
+        db.session.commit()
+
+    if not User.query.filter_by(display_name=user_json['display_name'],followers=user_json['followers']['total']).first():
+        
+        target_user.followers = user_json['followers']['total']
         db.session.add(target_user)
         db.session.commit()
 

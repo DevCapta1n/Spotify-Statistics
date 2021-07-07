@@ -104,3 +104,43 @@ $('#auth_form').on("submit", function() {
     $('#auth_body').css('justify-content','center')
     $('#auth_body').css('align-items','center')
 })
+
+$('#profile_form').on("submit", async function(evt) {
+    evt.preventDefault()
+    let user = await axios.get('http://127.0.0.1:5000/get-user')
+    user = user.data
+    $('#profile_content').html(`
+    <form action="/profile/${user.id}" method="POST">
+    <div>
+        <div class="form_element">
+            <span>Leave any field blank to let it remain unchanged</span>
+        </div>
+        <div class="form_element form-group">
+            <label for="picture">The URL of your profile picture</label>
+            <input class="form-control" name="picture" type="text" placeholder="${user.profile_pic_url}">
+        </div>
+        <div class="form_element form-group">
+            <label for="username">Display Name:</label>
+            <input class="skinny form-control" name="username" type="text" placeholder="${user.display_name}">
+            <small id="passwordHelpBlock" class="form-text text-muted">
+                Limit of thirty characters
+            </small>
+        </div>
+        <div class="form_element form-group">
+            <label for="country">Country:</label>
+            <input class="skinny form-control" name="country" type="text" minlength="2" maxlength="2" size="2" placeholder="${user.country}">
+            <small id="passwordHelpBlock" class="form-text text-muted">
+                Must be two characters
+            </small>
+        </div>
+        <div class="form_element">
+            <button class="btn btn-warning" role="button">Edit</button>
+        </div>
+    </div>
+    </form>
+    `)
+})
+
+// $('#edit_form').on("submit", function() {
+
+// })
