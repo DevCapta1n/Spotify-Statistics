@@ -107,7 +107,7 @@ $('#auth_form').on("submit", function() {
 
 $('#profile_form').on("submit", async function(evt) {
     evt.preventDefault()
-    let user = await axios.get('http://127.0.0.1:5000/get-user')
+    let user = await axios.get('https://statify-winford.herokuapp.com/get-user')
     user = user.data
     $('#profile_content').html(`
     <form action="/profile/${user.id}" method="POST">
