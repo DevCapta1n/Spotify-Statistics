@@ -22,7 +22,11 @@ class StatifyAppTestCase(TestCase):
         self.uid = 94566
         u = User(
             display_name = "test_user",
-            profile_pic_url = "https://www.freeiconspng.com/uploads/icon-user-blue-symbol-people-person-generic--public-domain--21.png"
+            profile_pic_url = "https://www.freeiconspng.com/uploads/icon-user-blue-symbol-people-person-generic--public-domain--21.png",
+            token = "fakeToken",
+            country = "US",
+            spotify_link = "google.com",
+            followers = 9
         )
         db.session.add(u)
         u.id = self.uid
