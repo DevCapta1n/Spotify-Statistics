@@ -41,4 +41,4 @@ and Heidi Fin on Unsplash
 The favicon is original by Jack Winford but does include an edited copy of 
 the Spotify icon.
 
-This branch is designed to run locally as opposed to the 'display' branch which is designed to run on Heroku.
+This branch is designed to run on Heroku and use the Heroku PostgreSQL database.
