@@ -102,17 +102,6 @@ def display_stats(user_id):
     headers["Content-Type"] = "application/json"
     headers["Authorization"] = f"Bearer {curr_user.token}"
 
-    url = f"https://api.spotify.com/v1/me/top/artists?time_range={artist_range}&limit=10&offset=0"
-    track_url = f"https://api.spotify.com/v1/me/top/tracks?time_range={track_range}&limit=10&offset=0"
-
-    #get the top ten artists and tracks for logged in user
-    top_artists = requests.get(url, headers=headers)
-    t_tracks = requests.get(track_url, headers=headers)
-
-    fixed_lists = fix_short_list(top_artists.json()['items'], t_tracks.json()['items'])
-    top_ten_artists = fixed_lists[0]
-    top_ten_tracks = fixed_lists[1]
-
     if request.method == 'POST':
 
         artist_range = request.form['artist_range']
@@ -134,6 +123,16 @@ def display_stats(user_id):
                                 art_range=artist_range,
                                 trk_range=track_range)
 
+    url = f"https://api.spotify.com/v1/me/top/artists?time_range={artist_range}&limit=10&offset=0"
+    track_url = f"https://api.spotify.com/v1/me/top/tracks?time_range={track_range}&limit=10&offset=0"
+
+    #get the top ten artists and tracks for logged in user
+    top_artists = requests.get(url, headers=headers)
+    t_tracks = requests.get(track_url, headers=headers)
+
+    fixed_lists = fix_short_list(top_artists.json()['items'], t_tracks.json()['items'])
+    top_ten_artists = fixed_lists[0]
+    top_ten_tracks = fixed_lists[1]
     return render_template('home.html',
                             title=f"{curr_user.display_name}'s Spotify Statistics",
                             artists=top_ten_artists,
