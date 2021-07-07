@@ -28,6 +28,7 @@ Flask
 flask_sqlalchemy
 PostgreSQL
 Spotify API
+Unittest
 and Heroku as the web server
 
 Photo Credits:

@@ -28,7 +28,7 @@ class UpdateDatabaseTestCase(TestCase):
         db.drop_all()
         db.create_all()
 
-        new_user = update_user(user)
+        new_user = update_user(user, 'token')
 
         self.new_user = new_user
     
@@ -40,30 +40,12 @@ class UpdateDatabaseTestCase(TestCase):
     def test_update_user(self):
         """test if the update user function works"""
 
-        new_user = update_user(user)
+        new_user = update_user(user, 'token')
 
 
         self.assertEqual(new_user.id, 1)
         self.assertEqual(new_user.display_name, 'jackwinford')
         self.assertEqual(new_user.profile_pic_url, 'https://i.scdn.co/image/ab6775700000ee851b1fe4b55885c1747c550445')
-
-    # def test_update_tracks(self):
-    #     """test if the update tracks function works"""
-
-    #     update_top_tracks(tracks, self.new_user, 'rainge')
-
-    #     tracks_data = TopTrack.query.all()
-
-    #     self.assertEqual(len(tracks_data), 10)
-
-    # def test_update_artists(self):
-    #     """test if the update artists function works"""
-
-    #     update_top_artists(artists, self.new_user, 'rainge')
-
-    #     artists_data = TopArtist.query.all()
-
-    #     self.assertEqual(len(artists_data), 10)
 
 if __name__ == '__main__':
     unittest.main()
