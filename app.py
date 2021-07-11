@@ -174,4 +174,6 @@ def get_user():
 @app.route('/countrydropdown')
 def get_menu():
     """return the HTML file with the country drop down menu"""
-    return render_template('countrydropdown.html')
+    curr_user = User.query.get_or_404(session['user'])
+    return render_template('countrydropdown.html',
+                            currCountry=curr_user.country)

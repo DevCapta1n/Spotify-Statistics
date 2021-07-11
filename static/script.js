@@ -113,25 +113,21 @@ $('#profile_form').on("submit", async function(evt) {
     <form action="/profile/${user.id}" method="POST">
     <div>
         <div class="form_element">
-            <span>Leave any field blank to let it remain unchanged</span>
+            <span>Leave any field to let it remain unchanged</span>
         </div>
         <div class="form_element form-group">
             <label for="picture">an URL of any image</label>
-            <input class="form-control" name="picture" type="text" placeholder="${user.profile_pic_url}">
+            <input class="form-control" name="picture" type="text" value="${user.profile_pic_url}">
         </div>
         <div class="form_element form-group">
             <label for="username">display name</label>
-            <input class="skinny form-control" name="username" type="text" maxlength="30" placeholder="${user.display_name}">
+            <input class="skinny form-control" name="username" type="text" maxlength="30" value="${user.display_name}">
             <small id="passwordHelpBlock" class="form-text text-muted">
                 Limit of thirty characters
             </small>
         </div>
         <div class="form_element form-group" id="countriesList">
-            <!-- <label for="country">Country</label>
-            <input class="skinny form-control" name="country" type="text" required minlength="2" maxlength="2" size="2" placeholder="${user.country}">
-            <small id="passwordHelpBlock" class="form-text text-muted">
-                Must be two characters
-            </small> -->
+
         </div>
         <div class="form_element">
             <button class="btn btn-warning" role="button">Edit</button>

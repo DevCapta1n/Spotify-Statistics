@@ -6,6 +6,10 @@ Statify uses information from the Spotify API to display a user's top ten tracks
 
 The main feature of this website is displaying the user's listening highlights at the time of writing this Spotify has not fully implemented this feature into their website or app. Although Spotify does have part of this feature implemented in their website and Spotify wrapped uses the same information. The feature of a user account is necessary for the storage of the session token and it adds to the personal nature of the site.
 
+Database Schema:
+![image info](./static/images/Statify.jpeg)
+The Statify database has only one table which is the users table. The table is represented in it's Flask SQLAlchemy syntax because that is the primary way it is written.
+ 
 The API being used for this site is the Spotify API. I will only use three parts of the api: authorization, personalization, and user profile. 
 
 The endpoint for the personalization part of the API is https://api.spotify.com/v1/me/top/{type} and the link to the docs is https://developer.spotify.com/documentation/web-api/reference/#endpoint-get-users-top-artists-and-tracks.
