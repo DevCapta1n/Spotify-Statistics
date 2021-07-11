@@ -170,3 +170,8 @@ def logout(user_id):
 def get_user():
     curr_user = User.query.get_or_404(session['user'])
     return jsonify(curr_user.to_dict())
+
+@app.route('/countrydropdown')
+def get_menu():
+    """return the HTML file with the country drop down menu"""
+    return render_template('countrydropdown.html')
