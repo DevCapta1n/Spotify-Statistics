@@ -1,14 +1,16 @@
 //Javascript for Statify 
 const urlBase = "https://statify-winford.herokuapp.com/";
 
-function time_range(evt) {
+async function time_range(evt) {
     /**
      * This function is triggered on the submission of the time form
      * on the home page.
      * It makes a call to the server and replaces the stats home area
      * of the page with the response html from the server.
      */
-    evt.preventDefault()
+    if (evt != undefined) {
+        evt.preventDefault()
+    }
 
     let artist_range = $("#artist_time").val();
     let track_range = $("#track_time").val();
@@ -39,12 +41,13 @@ function time_range(evt) {
             }
         }
     }
-    const user_id = $("#time_button").attr('name')
-    const url = urlBase + 'statistics-home/' + user_id
-
-    const data = {'artist_range': artist_range, 'track_range': track_range}
-
-    $("#stats_home").load(url, data)
+    const user_id = $("#time_button").attr('name');
+    const url = urlBase + 'statistics-home/' + user_id;
+    const data = {'artist_range': artist_range, 'track_range': track_range};
+    let stats = await axios.post(url, data);
+    stats = stats.data;
+    $("#stats_home").html(stats);
+    return stats;
 }
 
 function lastModified() {
@@ -75,63 +78,59 @@ function backGroundImage() {
      * Select one of three background images and set that image as the background
      * of the page body. (Credits for images in README.md)
      */
-    const randomInt = getRandomInt(3);
+    if ($("#auth_body").length) {
+        const randomInt = getRandomInt(3);
 
-    if (randomInt == 0) {
-        $("body").css('background-image', 'url(/static/images/travis-yewell-F-B7kWlkxDQ-unsplash.jpg)')
-    } else if (randomInt == 1) {
-        $("body").css('background-image', 'url(/static/images/mick-haupt-vGXHIh3URzc-unsplash.jpg)')
-    } else if (randomInt == 2) {
-        $("body").css('background-image', 'url(/static/images/heidi-fin-H4fYXZ1hyco-unsplash.jpg)')
+        if (randomInt == 0) {
+            $("body").css('background-image', 'url(/static/images/travis-yewell-F-B7kWlkxDQ-unsplash.jpg)')
+        } else if (randomInt == 1) {
+            $("body").css('background-image', 'url(/static/images/mick-haupt-vGXHIh3URzc-unsplash.jpg)')
+        } else if (randomInt == 2) {
+            $("body").css('background-image', 'url(/static/images/heidi-fin-H4fYXZ1hyco-unsplash.jpg)')
+        }
     }
-    
 }
 
-if ($("#auth_body").length) {
-    //if the auth_body id exists then the page must be the authorization page
-    backGroundImage()
-}
-
-lastModified()
-
-$("#time_form").on("submit", time_range);
-
-$('#auth_form').on("submit", function() {
+function loading() {
     $('#content-wrap').css('display','none')
     $('#auth_footer').css('display','none')
     $('.loader').css('display','block')
     $('#auth_body').css('display','flex')
     $('#auth_body').css('justify-content','center')
     $('#auth_body').css('align-items','center')
-})
+}
 
+<<<<<<< HEAD
 $('#profile_form').on("submit", async function(evt) {
     evt.preventDefault()
     let user = await axios.get('https://statify-winford.herokuapp.com/get-user')
+=======
+async function edit_profile(evt) {
+    if (evt != undefined) {
+        evt.preventDefault()
+    }
+    let user = await axios.get(urlBase + 'get-user')
+>>>>>>> main
     user = user.data
     $('#profile_content').html(`
     <form action="/profile/${user.id}" method="POST">
     <div>
         <div class="form_element">
-            <span>Leave any field blank to let it remain unchanged</span>
+            <span>Leave any field to let it remain unchanged</span>
         </div>
         <div class="form_element form-group">
-            <label for="picture">The URL of your profile picture</label>
-            <input class="form-control" name="picture" type="text" placeholder="${user.profile_pic_url}">
+            <label for="picture">an URL of any image</label>
+            <input class="form-control short_input" name="picture" type="text" value="${user.profile_pic_url}">
         </div>
         <div class="form_element form-group">
-            <label for="username">Display Name:</label>
-            <input class="skinny form-control" name="username" type="text" placeholder="${user.display_name}">
+            <label for="username">display name</label>
+            <input class="skinny form-control" name="username" type="text" maxlength="30" value="${user.display_name}">
             <small id="passwordHelpBlock" class="form-text text-muted">
                 Limit of thirty characters
             </small>
         </div>
-        <div class="form_element form-group">
-            <label for="country">Country:</label>
-            <input class="skinny form-control" name="country" type="text" minlength="2" maxlength="2" size="2" placeholder="${user.country}">
-            <small id="passwordHelpBlock" class="form-text text-muted">
-                Must be two characters
-            </small>
+        <div class="form_element form-group" id="countriesList">
+
         </div>
         <div class="form_element">
             <button class="btn btn-warning" role="button">Edit</button>
@@ -139,8 +138,17 @@ $('#profile_form').on("submit", async function(evt) {
     </div>
     </form>
     `)
-})
+    $(document).ready(function() {
+        $('#countriesList').load('/countrydropdown');
+    });
+}
+//if the auth_body id exists then the page must be the authorization page
+backGroundImage()
 
-// $('#edit_form').on("submit", function() {
+lastModified()
 
-// })
+$("#time_form").on("submit", time_range);
+
+$('#auth_form').on("submit", loading)
+
+$('#profile_form').on('submit', edit_profile)

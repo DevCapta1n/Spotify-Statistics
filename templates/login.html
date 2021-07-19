@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statify</title>
+    <script src="https://unpkg.com/jquery"></script>
+    <link rel="shortcut icon" href="static/images/favicon.ico">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div>
+        <nav class="navbar navbar-expand">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <img src="/static/images/statifyFavicon.png" width="80" height="80" alt="logo">
+                    <span>STATIFY</span>
+                </div>
+                <ul id="nav_list" class="nav navbar-nav navbar-right">
+                <li><a class="nav_link" href="/authorize">Link Your Spotify</a></li>
+                </ul>
+            </div>
+        </nav>
+        <div id="login_content">
+            <div id="login_header">
+                {% if form_url == 'login' %}
+                <span>Login with your username and password</span>
+                {% else %}
+                <span>Signup by creating a username and password</span>
+                {% endif %}
+            </div>
+            <div id="center_div">
+                <form action="/{{ form_url }}" method="POST">
+                    <label for="username">username</label>
+                    <input type="text" class="form-control" name="username">
+                    <label for="password">password</label>
+                    <input type="password" class="form-control" name="password">
+                    <div id="login_button">
+                        <button class="btn btn-lrg btn-success" role="button">{{ form_url }}</button>
+                    </div>
+                </form>
+                <div id="flash_zone">
+                    {% for category, message in get_flashed_messages(with_categories=True) %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div id="login_footer">
+            <span>created by: Jack Winford</span><br>
+            <span id="modified"></span>
+        </div>
+    </div>
+</body>
+<script src="https://unpkg.com/axios/dist/axios.js"></script>
+<script src="/static/script.js"></script>
+</html>

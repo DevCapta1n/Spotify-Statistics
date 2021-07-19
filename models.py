@@ -4,6 +4,10 @@ from flask_sqlalchemy import SQLAlchemy
 import json
 import sqlalchemy
 from sqlalchemy.types import TypeDecorator, VARCHAR
+# from flask import current_app as app
+# from flask_bcrypt import Bcrypt
+# bcrypt = Bcrypt(app)
+from app import bcrypt
 
 db = SQLAlchemy()
 
@@ -21,13 +25,13 @@ class User(db.Model):
     country = db.Column(db.Text, nullable=False)
     spotify_link = db.Column(db.Text, nullable=False, unique=True)
     followers = db.Column(db.Integer, nullable=False)
+    new = db.Column(db.Boolean, nullable=False)
 
     def to_dict(self):
         return {
             'id': self.id,
             'display_name': self.display_name,
             'profile_pic_url': self.profile_pic_url,
-            'token': self.token,
             'country': self.country,
             'spotify_link': self.spotify_link,
             'followers': self.followers

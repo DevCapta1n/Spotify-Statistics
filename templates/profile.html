@@ -8,6 +8,8 @@
     <link rel="shortcut icon" href="static/images/favicon.ico">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet"
+    href="https://unpkg.com/jasmine-core/lib/jasmine-core/jasmine.css"/>
 </head>
 <body>
     <div id="content-wrap">
@@ -29,7 +31,7 @@
                     <a class="nav_link" href="/statistics-home/{{ user.id }}">Stats</a>
                 </li>
                 <li>
-                    <a class="nav_link" href="/logout/{{ user.id }}">Log out</a>
+                    <a class="nav_link" href="/logout">Log out</a>
                 </li>
                 {% endif %}
                 </ul>
@@ -48,11 +50,16 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item"><span>Display name: {{ user.display_name }}</span></li>
                         <li class="list-group-item"><span>Country: {{ user.country }}</span></li>
-                        <li class="list-group-item"><a href="{{ user.spotify_link }}">View Your Spotify Page</a></li>
+                        <li class="list-group-item"><a href="{{ user.spotify_link }}" target="_blank">View Your Spotify Page</a></li>
                         <li class="list-group-item"><span>You have {{ user.followers }} followers on Spotify</span></li>
                         <li class="list-group-item">
                             <form id="profile_form">
                                 <button class="btn btn-lrg btn-warning" role="button">Edit</button>
+                            </form>
+                        </li>
+                        <li class="list-group-item">
+                            <form id="delete_profile_form" action="/delete-user" method="POST">
+                                <button class="btn btn-lrg btn-danger" role="button">Delete Account</button>
                             </form>
                         </li>
                     </ul>
@@ -72,5 +79,15 @@
     </footer>
 </body>
 <script src="https://unpkg.com/axios/dist/axios.js"></script>
+<!-- uncoment the following to run Jasmine tests -->
+<!-- <script 
+    src="https://unpkg.com/jasmine-core/lib/jasmine-core/jasmine.js"></script>
+<script 
+    src="https://unpkg.com/jasmine-core/lib/jasmine-core/jasmine-html.js"></script>
+<script 
+    src= "https://unpkg.com/jasmine-core/lib/jasmine-core/boot.js"></script>
+
+<script src="/static/profile.test.js"></script> -->
+<!-- end of Jasmine tests -->
 <script src="/static/script.js"></script>
 </html>
