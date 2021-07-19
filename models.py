@@ -19,7 +19,7 @@ class User(db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
-    display_name = db.Column(db.String(30), nullable=False)
+    display_name = db.Column(db.Text, nullable=False)
     password = db.Column(db.Text, nullable=False)
     profile_pic_url = db.Column(db.Text, nullable=False)
     token = db.Column(db.Text, nullable=False)

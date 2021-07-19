@@ -103,7 +103,18 @@ def signup():
     if request.method == "POST":
         user = User.query.get(session['temp'])
         try:
-            
+            username = request.form['username']
+            password = request.form['password']
+            print(username)
+            print(password)
+            if username == '':
+                flash("Username must contain at least one character", 'danger')
+                return render_template('login.html',
+                            form_url = 'signup')
+            if password == '':
+                flash("Password must contain at least one character", 'danger')
+                return render_template('login.html',
+                            form_url = 'signup')
             hashed = bcrypt.generate_password_hash(request.form['password'])
             hashed_utf8 = hashed.decode("utf8")
 
@@ -115,7 +126,8 @@ def signup():
 
         except IntegrityError:
             flash("Username already taken", 'danger')
-            return render_template('login.html')
+            return render_template('login.html',
+                            form_url = 'signup')
 
         do_login(user)
 
@@ -187,7 +199,11 @@ def initialize():
     token_url = "https://accounts.spotify.com/api/token"
     api_token_resp = requests.post(token_url, headers=auth_header, data=token_form, json=True)
     print(api_token_resp)
-    print(api_token_resp.json()['access_token'])
+    try:
+        print(api_token_resp.json()['access_token'])
+    except json.decoder.JSONDecodeError:
+        flash("There was an issue communicating with Spotify. Please try again.", 'danger')
+        return redirect('/')
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json"
     headers["Content-Type"] = "application/json"
@@ -236,8 +252,8 @@ def display_stats(user_id):
 
     if request.method == 'POST':
 
-        artist_range = request.form['artist_range']
-        track_range = request.form['track_range']
+        artist_range = request.json['artist_range']
+        track_range = request.json['track_range']
 
         url = f"https://api.spotify.com/v1/me/top/artists?time_range={artist_range}&limit=10&offset=0"
         track_url = f"https://api.spotify.com/v1/me/top/tracks?time_range={track_range}&limit=10&offset=0"
@@ -275,9 +291,6 @@ def display_profile(user_id):
         curr_user.profile_pic_url = request.form['picture']
         curr_user.display_name = request.form['username']
         curr_user.country = request.form['country']
-        print("//////////////////")
-        print(request.form['country'])
-        print("//////////////////")
         db.session.add(curr_user)
         db.session.commit()
     return render_template('profile.html',

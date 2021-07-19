@@ -1,14 +1,16 @@
 //Javascript for Statify 
 const urlBase = "http://127.0.0.1:5000/";
 
-function time_range(evt) {
+async function time_range(evt) {
     /**
      * This function is triggered on the submission of the time form
      * on the home page.
      * It makes a call to the server and replaces the stats home area
      * of the page with the response html from the server.
      */
-    evt.preventDefault()
+    if (evt != undefined) {
+        evt.preventDefault()
+    }
 
     let artist_range = $("#artist_time").val();
     let track_range = $("#track_time").val();
@@ -39,12 +41,13 @@ function time_range(evt) {
             }
         }
     }
-    const user_id = $("#time_button").attr('name')
-    const url = urlBase + 'statistics-home/' + user_id
-
-    const data = {'artist_range': artist_range, 'track_range': track_range}
-
-    $("#stats_home").load(url, data)
+    const user_id = $("#time_button").attr('name');
+    const url = urlBase + 'statistics-home/' + user_id;
+    const data = {'artist_range': artist_range, 'track_range': track_range};
+    let stats = await axios.post(url, data);
+    stats = stats.data;
+    $("#stats_home").html(stats);
+    return stats;
 }
 
 function lastModified() {
@@ -75,39 +78,33 @@ function backGroundImage() {
      * Select one of three background images and set that image as the background
      * of the page body. (Credits for images in README.md)
      */
-    const randomInt = getRandomInt(3);
+    if ($("#auth_body").length) {
+        const randomInt = getRandomInt(3);
 
-    if (randomInt == 0) {
-        $("body").css('background-image', 'url(/static/images/travis-yewell-F-B7kWlkxDQ-unsplash.jpg)')
-    } else if (randomInt == 1) {
-        $("body").css('background-image', 'url(/static/images/mick-haupt-vGXHIh3URzc-unsplash.jpg)')
-    } else if (randomInt == 2) {
-        $("body").css('background-image', 'url(/static/images/heidi-fin-H4fYXZ1hyco-unsplash.jpg)')
+        if (randomInt == 0) {
+            $("body").css('background-image', 'url(/static/images/travis-yewell-F-B7kWlkxDQ-unsplash.jpg)')
+        } else if (randomInt == 1) {
+            $("body").css('background-image', 'url(/static/images/mick-haupt-vGXHIh3URzc-unsplash.jpg)')
+        } else if (randomInt == 2) {
+            $("body").css('background-image', 'url(/static/images/heidi-fin-H4fYXZ1hyco-unsplash.jpg)')
+        }
     }
-    
 }
 
-if ($("#auth_body").length) {
-    //if the auth_body id exists then the page must be the authorization page
-    backGroundImage()
-}
-
-lastModified()
-
-$("#time_form").on("submit", time_range);
-
-$('#auth_form').on("submit", function() {
+function loading() {
     $('#content-wrap').css('display','none')
     $('#auth_footer').css('display','none')
     $('.loader').css('display','block')
     $('#auth_body').css('display','flex')
     $('#auth_body').css('justify-content','center')
     $('#auth_body').css('align-items','center')
-})
+}
 
-$('#profile_form').on('submit', async function(evt) {
-    evt.preventDefault()
-    let user = await axios.get('http://127.0.0.1:5000/get-user')
+async function edit_profile(evt) {
+    if (evt != undefined) {
+        evt.preventDefault()
+    }
+    let user = await axios.get(urlBase + 'get-user')
     user = user.data
     $('#profile_content').html(`
     <form action="/profile/${user.id}" method="POST">
@@ -138,4 +135,14 @@ $('#profile_form').on('submit', async function(evt) {
     $(document).ready(function() {
         $('#countriesList').load('/countrydropdown');
     });
-})
+}
+//if the auth_body id exists then the page must be the authorization page
+backGroundImage()
+
+lastModified()
+
+$("#time_form").on("submit", time_range);
+
+$('#auth_form').on("submit", loading)
+
+$('#profile_form').on('submit', edit_profile)
