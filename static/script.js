@@ -100,17 +100,9 @@ function loading() {
     $('#auth_body').css('align-items','center')
 }
 
-<<<<<<< HEAD
 $('#profile_form').on("submit", async function(evt) {
     evt.preventDefault()
     let user = await axios.get('https://statify-winford.herokuapp.com/get-user')
-=======
-async function edit_profile(evt) {
-    if (evt != undefined) {
-        evt.preventDefault()
-    }
-    let user = await axios.get(urlBase + 'get-user')
->>>>>>> main
     user = user.data
     $('#profile_content').html(`
     <form action="/profile/${user.id}" method="POST">
@@ -141,14 +133,14 @@ async function edit_profile(evt) {
     $(document).ready(function() {
         $('#countriesList').load('/countrydropdown');
     });
-}
+});
 //if the auth_body id exists then the page must be the authorization page
-backGroundImage()
+backGroundImage();
 
-lastModified()
+lastModified();
 
 $("#time_form").on("submit", time_range);
 
-$('#auth_form').on("submit", loading)
+$('#auth_form').on("submit", loading);
 
-$('#profile_form').on('submit', edit_profile)
+$('#profile_form').on('submit', edit_profile);
