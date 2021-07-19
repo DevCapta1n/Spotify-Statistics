@@ -4,9 +4,6 @@ from flask_sqlalchemy import SQLAlchemy
 import json
 import sqlalchemy
 from sqlalchemy.types import TypeDecorator, VARCHAR
-# from flask import current_app as app
-# from flask_bcrypt import Bcrypt
-# bcrypt = Bcrypt(app)
 from app import bcrypt
 
 db = SQLAlchemy()
@@ -19,7 +16,8 @@ class User(db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
-    display_name = db.Column(db.String(30), nullable=False)
+    display_name = db.Column(db.Text, nullable=False)
+    password = db.Column(db.Text, nullable=False)
     profile_pic_url = db.Column(db.Text, nullable=False)
     token = db.Column(db.Text, nullable=False)
     country = db.Column(db.Text, nullable=False)
@@ -36,6 +34,32 @@ class User(db.Model):
             'spotify_link': self.spotify_link,
             'followers': self.followers
         }
+
+    @classmethod
+    def register(cls, username, pwd):
+        """Register user w/hashed password & return user."""
+
+        hashed = bcrypt.generate_password_hash(pwd)
+        # turn bytestring into normal (unicode utf8) string
+        hashed_utf8 = hashed.decode("utf8")
+
+        # return instance of user w/username and hashed pwd
+        return {username:username, password:hashed_utf8}
+    
+    @classmethod
+    def authenticate(cls, username, pwd):
+        """Validate that user exists & password is correct.
+
+        Return user if valid; else return False.
+        """
+
+        u = User.query.filter_by(display_name=username).first()
+
+        if u and bcrypt.check_password_hash(u.password, pwd):
+            # return user instance
+            return u
+        else:
+            return False
 
 def connect_db(app):
     """Connect this database to provided Flask app."""
