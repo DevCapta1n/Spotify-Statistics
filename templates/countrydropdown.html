@@ -1,8 +1,9 @@
 <!-- This country list is by danrovito on GitHub. 
     The original code can be found at https://gist.github.com/danrovito/977bcb97c9c2dfd3398a#file-countrydropdown-html-->
 <label for="country">Country</label>
-<select id="country" name="country" class="form-control">
-    <option value="" selected disabled hidden>{{ currCountry }}</option>
+<select id="country" name="country" class="form-control short_input">
+    <!-- <option value="EMPTY" selected disabled hidden>{{ currCountry }}</option> -->
+    <option value="{{ currCountry }}" selected hidden>{{ currCountry }}</option>
     <option value="Afghanistan">Afghanistan</option>
     <option value="Åland Islands">Åland Islands</option>
     <option value="Albania">Albania</option>

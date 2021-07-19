@@ -105,7 +105,7 @@ $('#auth_form').on("submit", function() {
     $('#auth_body').css('align-items','center')
 })
 
-$('#profile_form').on("submit", async function(evt) {
+$('#profile_form').on('submit', async function(evt) {
     evt.preventDefault()
     let user = await axios.get('http://127.0.0.1:5000/get-user')
     user = user.data
@@ -117,7 +117,7 @@ $('#profile_form').on("submit", async function(evt) {
         </div>
         <div class="form_element form-group">
             <label for="picture">an URL of any image</label>
-            <input class="form-control" name="picture" type="text" value="${user.profile_pic_url}">
+            <input class="form-control short_input" name="picture" type="text" value="${user.profile_pic_url}">
         </div>
         <div class="form_element form-group">
             <label for="username">display name</label>
@@ -139,7 +139,3 @@ $('#profile_form').on("submit", async function(evt) {
         $('#countriesList').load('/countrydropdown');
     });
 })
-
-// $('#edit_form').on("submit", function() {
-
-// })

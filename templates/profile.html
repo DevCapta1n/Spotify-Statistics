@@ -29,7 +29,7 @@
                     <a class="nav_link" href="/statistics-home/{{ user.id }}">Stats</a>
                 </li>
                 <li>
-                    <a class="nav_link" href="/logout/{{ user.id }}">Log out</a>
+                    <a class="nav_link" href="/logout">Log out</a>
                 </li>
                 {% endif %}
                 </ul>
@@ -53,6 +53,11 @@
                         <li class="list-group-item">
                             <form id="profile_form">
                                 <button class="btn btn-lrg btn-warning" role="button">Edit</button>
+                            </form>
+                        </li>
+                        <li class="list-group-item">
+                            <form id="delete_profile_form" action="/delete-user" method="POST">
+                                <button class="btn btn-lrg btn-danger" role="button">Delete Account</button>
                             </form>
                         </li>
                     </ul>
