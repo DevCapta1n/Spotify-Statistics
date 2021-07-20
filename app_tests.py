@@ -21,7 +21,8 @@ class StatifyAppTestCase(TestCase):
 
         self.uid = 94566
         u = User(
-            display_name = "test_user",
+            display_name = "test",
+            password = "test",
             profile_pic_url = "https://www.freeiconspng.com/uploads/icon-user-blue-symbol-people-person-generic--public-domain--21.png",
             token = "fakeToken",
             country = "US",
@@ -49,6 +50,11 @@ class StatifyAppTestCase(TestCase):
             self.assertIn("Welcome to Statify", str(resp.data))
             self.assertIn("login with Spotify", str(resp.data))
             self.assertIn("created by: Jack Winford", str(resp.data))
+
+    def test_login(self):
+        """test logging in and displaying the login page"""
+        with self.client as c:
+            resp = c.get("/login")
 
 if __name__ == '__main__':
     unittest.main()

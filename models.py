@@ -4,9 +4,6 @@ from flask_sqlalchemy import SQLAlchemy
 import json
 import sqlalchemy
 from sqlalchemy.types import TypeDecorator, VARCHAR
-# from flask import current_app as app
-# from flask_bcrypt import Bcrypt
-# bcrypt = Bcrypt(app)
 from app import bcrypt
 
 db = SQLAlchemy()
@@ -57,9 +54,7 @@ class User(db.Model):
         """
 
         u = User.query.filter_by(display_name=username).first()
-        print(u)
-        #print(u.password)
-        #print(bcrypt.check_password_hash(u.password, pwd))
+
         if u and bcrypt.check_password_hash(u.password, pwd):
             # return user instance
             return u

@@ -21,7 +21,8 @@ class StatifyModelTestCase(TestCase):
 
         self.uid = 94566
         u = User(
-            display_name = "test_user",
+            display_name = "test",
+            password = "test",
             profile_pic_url = "https://www.freeiconspng.com/uploads/icon-user-blue-symbol-people-person-generic--public-domain--21.png",
             token = "fakeToken",
             country = "US",

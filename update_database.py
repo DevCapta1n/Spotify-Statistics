@@ -1,9 +1,6 @@
 """functions for updating the statify database with data from the spotify api"""
 
 from models import db, connect_db, User
-# from app import app
-# from flask_bcrypt import Bcrypt
-# bcrypt = Bcrypt(app)
 from app import bcrypt
 def update_user(user_json, token):
     """update, create, or do nothing, then return the passed in user"""
