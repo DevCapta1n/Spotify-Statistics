@@ -3,9 +3,14 @@
 import os
 from unittest import TestCase
 import unittest
+from app import app
+# from flask import Flask
+# from flask_bcrypt import Bcrypt
+# app = Flask(__name__)
+# bcrypt = Bcrypt(app)
 from models import db, connect_db, User
 
-os.environ['DATABASE_URL'] = 'postgresql://statify-test'
+os.environ['DATABASE_URL'] = 'postgresql://statify_test'
 
 from app import app
 
@@ -27,7 +32,8 @@ class StatifyAppTestCase(TestCase):
             token = "fakeToken",
             country = "US",
             spotify_link = "google.com",
-            followers = 9
+            followers = 9,
+            new = True
         )
         db.session.add(u)
         u.id = self.uid

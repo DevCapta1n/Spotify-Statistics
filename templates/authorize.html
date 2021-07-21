@@ -40,9 +40,13 @@
         </div>
         <div id="auth_content">
             <span>By retrieving data from Spotify, Statify displays your top tracks and artists.</span>
-            <form method="POST" action="/authorize" id="auth_form" name="auth_form">
+            <form method="GET" action="/login" class="auth_form" name="auth_form">
                 <label><span>See your stats:</span></label>
-                <button class="btn btn-danger">login with Spotify</button>
+                <button class="btn btn-danger">log in</button>
+            </form>
+            <form method="GET" action="/signup" class="auth_form" name="auth_form">
+                <label><span>Don't already have an account? Just sign up:</span></label>
+                <button class="btn btn-danger">sign up</button>
             </form>
             <h4><span id="login_title">Login to view your:</span></h4>
             <ul>
@@ -75,7 +79,6 @@
     src="https://unpkg.com/jasmine-core/lib/jasmine-core/jasmine-html.js"></script>
 <script 
     src= "https://unpkg.com/jasmine-core/lib/jasmine-core/boot.js"></script>
-
 <script src="/static/authorize.test.js"></script> -->
 <!-- end of Jasmine tests -->
 <script src="/static/script.js"></script>

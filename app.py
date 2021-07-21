@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect, render_template, flash, session, jsonify, url_for, g
+from flask import Flask, request, redirect, render_template, flash, session, jsonify, url_for, g, abort
 from flask_bcrypt import Bcrypt
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -8,16 +8,17 @@ import requests
 import base64
 from requests.structures import CaseInsensitiveDict
 from update_database import update_user
-
+from flask_socketio import SocketIO
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///statify"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'ihaveasecret'
 
+#socketio = SocketIO(app)
+
+#socketio.run(app)
 connect_db(app)
 db.create_all()
-
-
 
 client_id = "7c396993dafd46c3b30341981ec56217"
 urlBase = "http://127.0.0.1:5000/"
@@ -45,7 +46,7 @@ def fix_short_list(art_list, trk_list):
 
 def do_login(user):
     """Log in user."""
-    del session['temp']
+
     session['user'] = user.id
 
 def do_logout():
@@ -53,19 +54,22 @@ def do_logout():
     if 'user' in session:
         del session['user']
 
-def who_is_it():
-    """Only allow access to a page if the user is authorized (in the session)"""
-    if not g.user:
-        flash("Access unauthorized.", "danger")
-        return redirect("/")
+def add_un_and_pw(username, password):
+    """Add the username and password from the log in or sign up form 
+    to the session"""
+    
+    hashed = bcrypt.generate_password_hash(password)
+    hashed_utf8 = hashed.decode("utf8")
+
+    session['UN'] =  username
+    session['PW'] = hashed_utf8
 
 @app.before_request
 def add_user_to_g():
-    """If we're logged in, add curr user to Flask global."""
+    """If the user is logged in, add the current user to Flask global."""
 
     if 'user' in session:
         g.user = User.query.get(session['user'])
-
     else:
         g.user = None
 
@@ -80,12 +84,12 @@ def root():
 def logout():
     """remove the user from the session then flash a logout message 
     and redirect to the landing page"""
+    if g.user:
 
-    curr_user = User.query.get_or_404(session['user'])
+        flash(f"{g.user.display_name} has been logged out", 'success')
 
     do_logout()
-
-    flash(f"{curr_user.display_name} has been logged out", 'success')
+    
     return redirect('/')
 
 @app.route('/signup', methods=["GET", "POST"])
@@ -101,37 +105,26 @@ def signup():
     """
 
     if request.method == "POST":
-        user = User.query.get(session['temp'])
-        try:
-            username = request.form['username']
-            password = request.form['password']
-            print(username)
-            print(password)
-            if username == '':
-                flash("Username must contain at least one character", 'danger')
-                return render_template('login.html',
-                            form_url = 'signup')
-            if password == '':
-                flash("Password must contain at least one character", 'danger')
-                return render_template('login.html',
-                            form_url = 'signup')
-            hashed = bcrypt.generate_password_hash(request.form['password'])
-            hashed_utf8 = hashed.decode("utf8")
 
-            user.display_name = request.form['username']
-            user.password = hashed_utf8
-            user.new = False
-            db.session.add(user)
-            db.session.commit()
-
-        except IntegrityError:
+        username = request.form['username']
+        password = request.form['password']
+        print(username)
+        print(password)
+        if username == '':
+            flash("Username must contain at least one character", 'danger')
+            return render_template('login.html',
+                        form_url = 'signup')
+        if password == '':
+            flash("Password must contain at least one character", 'danger')
+            return render_template('login.html',
+                        form_url = 'signup')
+        if User.query.filter_by(display_name=username).first():
             flash("Username already taken", 'danger')
             return render_template('login.html',
                             form_url = 'signup')
-
-        do_login(user)
-
-        return redirect(f"/statistics-home/{user.id}")
+        add_un_and_pw(username, password)
+        session['signing in'] = True
+        return redirect("/authorize")
 
     return render_template('login.html',
                             form_url = 'signup')
@@ -140,21 +133,23 @@ def signup():
 @app.route('/login', methods=["GET", "POST"])
 def login():
     """Handle user login."""
-    try:
-        temp_user = User.query.get(session['temp'])
-        if temp_user.new:
-            return redirect('/signup')
-    except KeyError:
-        pass
+
     if request.method == "POST":
-        print(request.form['username'])
-        print(request.form['password'])
+        username = request.form['username']
+        password = request.form['password']
+        print(username)
+        print(password)
+        if username == '':
+            flash("Username must contain at least one character", 'danger')
+        if password == '':
+            flash("Password must contain at least one character", 'danger')
         user = User.authenticate(request.form['username'],
                                 request.form['password'])
 
         if user:
+            add_un_and_pw(username,password)
             do_login(user)
-            return redirect(f"/statistics-home/{user.id}")
+            return redirect("/authorize")
 
         flash("Invalid credentials.", 'danger')
 
@@ -165,9 +160,14 @@ def login():
 def authorize():
     """when the user clicks on the login button send a request to the authorize
     end of the Spotify API accounts service"""
-    redirect_uri = urlBase + 'initialize'
-    session['from_authorize'] = True
-    return redirect(f"https://accounts.spotify.com/authorize?client_id={client_id}&response_type=code&redirect_uri={redirect_uri}&scope=user-top-read%20user-read-private")
+
+    if 'PW' in session:
+        redirect_uri = urlBase + 'initialize'
+        session['from_authorize'] = True
+        return redirect(f"https://accounts.spotify.com/authorize?client_id={client_id}&response_type=code&redirect_uri={redirect_uri}&scope=user-top-read%20user-read-private")
+
+    flash("You must log in before being authorized", 'danger')
+    return redirect('/')
 
 @app.route('/initialize', methods=['POST', 'GET'])
 def initialize():
@@ -201,8 +201,8 @@ def initialize():
     print(api_token_resp)
     try:
         print(api_token_resp.json()['access_token'])
-    except json.decoder.JSONDecodeError:
-        flash("There was an issue communicating with Spotify. Please try again.", 'danger')
+    except (json.decoder.JSONDecodeError, KeyError):
+        flash("There was an issue communicating with Spotify. Please try again.", "danger")
         return redirect('/')
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json"
@@ -217,22 +217,35 @@ def initialize():
     except json.decoder.JSONDecodeError:
         flash("There was an issue communicating with Spotify. Please try again.", 'danger')
         return redirect('/')
-    token = api_token_resp.json()['access_token']
-    new_user = update_user(curr_user, token)
-    session['temp'] = new_user.id
-    if new_user.new:
-        return redirect('/signup')
-    return redirect('/login')
 
-@app.route('/statistics-home/<user_id>', methods=['POST', 'GET'])
-def display_stats(user_id):
+    if 'signing in' in session and User.query.filter_by(spotify_link=curr_user['external_urls']['spotify']).first():
+        #if the user is trying to sign in but their is already an account with their 
+        #Spotify data then redirect them to the login
+        flash("Your Spotify data is already on an account and the username you entered does not exist", "danger")
+        del session['signing in']
+        return render_template('login.html',
+                        form_url = 'login')
+    if 'signing in' in session:
+        del session['signing in']
+    token = api_token_resp.json()['access_token']
+    new_user = update_user(curr_user, session['UN'], session['PW'], token)
+    del session['UN']
+    del session['PW']
+    do_login(new_user)
+    return redirect('/statistics-home')
+
+@app.route('/statistics-home', methods=['POST', 'GET'])
+def display_stats():
     """display the top artists and tracks the given user, also taking into account the 
     time range of their top artists and tracks"""
-    who_is_it()
+    print(g.user)
+    if g.user == None:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
 
     artist_range = "long_term"
     track_range = "long_term"
-    curr_user = User.query.get_or_404(user_id)
+    curr_user = g.user
 
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json"
@@ -279,13 +292,16 @@ def display_stats(user_id):
                             art_range=artist_range,
                             trk_range=track_range)
 
-@app.route('/profile/<user_id>', methods=['POST', 'GET'])
-def display_profile(user_id):
+@app.route('/profile', methods=['POST', 'GET'])
+def display_profile():
     """display the profile page for a user where they can view and edit all the information
     for there account"""
-    who_is_it()
-    print("CHECKPOINT")
-    curr_user = User.query.get_or_404(user_id)
+
+    if g.user == None:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    curr_user = g.user
     if request.method == 'POST':
 
         curr_user.profile_pic_url = request.form['picture']
@@ -300,7 +316,10 @@ def display_profile(user_id):
 def delete_user():
     """remove the logged in user from the session and database"""
 
-    who_is_it()
+    if g.user == None:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
     curr_user = User.query.filter_by(id=session['user']).one()
     do_logout()
     flash(f"{curr_user.display_name}'s account has been removed", 'success')
@@ -312,13 +331,20 @@ def delete_user():
 
 @app.route('/get-user')
 def get_user():
-    who_is_it()
-    curr_user = User.query.get_or_404(session['user'])
-    return jsonify(curr_user.to_dict())
+    """return the json representation of a user or abort if the user
+    does not exist"""
+
+    if g.user:
+        curr_user = g.user
+        return jsonify(curr_user.to_dict())
+    abort(405)
 
 @app.route('/countrydropdown')
 def get_menu():
-    """return the HTML file with the country drop down menu"""
-    curr_user = User.query.get_or_404(session['user'])
-    return render_template('countrydropdown.html',
-                            currCountry=curr_user.country)
+    """return the HTML file with the country drop down menu. Abort if
+    there is not an authorized user in the session"""
+
+    if g.user:
+        return render_template('countrydropdown.html',
+                                currCountry=g.user.country)
+    abort(405)

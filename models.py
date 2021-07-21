@@ -23,7 +23,6 @@ class User(db.Model):
     country = db.Column(db.Text, nullable=False)
     spotify_link = db.Column(db.Text, nullable=False, unique=True)
     followers = db.Column(db.Integer, nullable=False)
-    new = db.Column(db.Boolean, nullable=False)
 
     def to_dict(self):
         return {

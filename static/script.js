@@ -41,8 +41,8 @@ async function time_range(evt) {
             }
         }
     }
-    const user_id = $("#time_button").attr('name');
-    const url = urlBase + 'statistics-home/' + user_id;
+
+    const url = urlBase + 'statistics-home';
     const data = {'artist_range': artist_range, 'track_range': track_range};
     let stats = await axios.post(url, data);
     stats = stats.data;
@@ -107,7 +107,7 @@ async function edit_profile(evt) {
     let user = await axios.get(urlBase + 'get-user')
     user = user.data
     $('#profile_content').html(`
-    <form action="/profile/${user.id}" method="POST">
+    <form action="/profile" method="POST">
     <div>
         <div class="form_element">
             <span>Leave any field to let it remain unchanged</span>
@@ -143,6 +143,6 @@ lastModified()
 
 $("#time_form").on("submit", time_range);
 
-$('#auth_form').on("submit", loading)
+$('.auth_form').on("submit", loading)
 
 $('#profile_form').on('submit', edit_profile)

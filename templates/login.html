@@ -18,7 +18,7 @@
                     <span>STATIFY</span>
                 </div>
                 <ul id="nav_list" class="nav navbar-nav navbar-right">
-                <li><a class="nav_link" href="/authorize">Link Your Spotify</a></li>
+                <li><a class="nav_link" href="/">Landing Page</a></li>
                 </ul>
             </div>
         </nav>
@@ -40,6 +40,9 @@
                         <button class="btn btn-lrg btn-success" role="button">{{ form_url }}</button>
                     </div>
                 </form>
+                {% if form_url == "signup" %}
+                <span>Make sure to remember your username and password. Alternatively, before closing your tab simply delete your account. There is no username or password recovery</span>
+                {% endif %}
                 <div id="flash_zone">
                     {% for category, message in get_flashed_messages(with_categories=True) %}
                     <div class="alert alert-{{ category }}">{{ message }}</div>
