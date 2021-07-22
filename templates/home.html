@@ -25,7 +25,7 @@
                 {% else %}
                 <li>
                     <img src="{{ user.profile_pic_url }}" width="80" height="80" alt="{{ user.display_name }}'s profile picture">
-                    <a class="nav_link" href="/profile/{{ user.id }}">{{ user.display_name }}</a>
+                    <a class="nav_link" href="/profile">{{ user.display_name }}</a>
                 </li>
                 <li>
                     <a class="nav_link" href="/logout">Log out</a>
@@ -68,11 +68,12 @@
                     </div>
                     <div id="button_container" class="row">
                         <div id="button_div">
-                            <button id="time_button" name="{{ user.id }}" class="btn btn-success btn-lg">Select</button>
+                            <button id="time_button" class="btn btn-success btn-lg">Select</button>
                         </div>
                     </div>
                 </fieldset>
             </form>
+            <div class="loader"></div>
             <div class="container" id="stats_home">
                 <div class="row">
                     <div class="col">

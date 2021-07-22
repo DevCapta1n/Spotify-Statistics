@@ -21,7 +21,8 @@ class StatifyModelTestCase(TestCase):
 
         self.uid = 94566
         u = User(
-            display_name = "test_user",
+            display_name = "test UN",
+            password = "test PW",
             profile_pic_url = "https://www.freeiconspng.com/uploads/icon-user-blue-symbol-people-person-generic--public-domain--21.png",
             token = "fakeToken",
             country = "US",
@@ -48,7 +49,8 @@ class StatifyModelTestCase(TestCase):
             u = self.u
             dictionary = u.to_dict()
 
-            self.assertEqual(dictionary['display_name'], 'test_user')
+            self.assertEqual(dictionary['display_name'], 'test UN')
             self.assertEqual(dictionary['country'], 'US')
+
 if __name__ == '__main__':
     unittest.main()

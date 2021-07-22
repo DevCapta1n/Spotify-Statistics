@@ -6,6 +6,16 @@ Statify uses information from the Spotify API to display a user's top ten tracks
 
 The main feature of this website is displaying the user's listening highlights at the time of writing this Spotify has not fully implemented this feature into their website or app. Although Spotify does have part of this feature implemented in their website and Spotify wrapped uses the same information. The feature of a user account is necessary for the storage of the session token and it adds to the personal nature of the site.
 
+Database Schema:
+![image info](./static/images/Statify.jpeg)
+The table is represented the same way it is defined, in it's Flask SQLAlchemy form.
+
+To run the Jasmine tests for the javascript functions in script.js certain lines must be uncommented. These lines can be found at the bottom of authorize.html, home.html, and profile.html. When uncommented these lines contain the test script links for the respective tests for each page. The Jasmine printout can then be found at the bottom of each page.
+The Jasmine tests can be found in the static/ folder inside the following files authorize.test.js, home.test.js, and profile.test.js.
+
+To run the unittests for the Python use the following command while inside the home directory for the downloaded copy of Statify being used:
+$ python -m unittest app_tests.py models_tests.py updates_data_tests.py
+
 The API being used for this site is the Spotify API. I will only use three parts of the api: authorization, personalization, and user profile. 
 
 The endpoint for the personalization part of the API is https://api.spotify.com/v1/me/top/{type} and the link to the docs is https://developer.spotify.com/documentation/web-api/reference/#endpoint-get-users-top-artists-and-tracks.

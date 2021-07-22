@@ -1,3 +1,4 @@
+//tests for the home page specific function: time_range()
 it('should replace the home page content with the appropriate four weeks data', async function() {
     let returned_html = undefined;
     $("#artist_time").val('Four Weeks').change();

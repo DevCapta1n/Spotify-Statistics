@@ -9,6 +9,8 @@ async function time_range(evt) {
      * of the page with the response html from the server.
      */
     if (evt != undefined) {
+        //evt will be undefined in the case of this function being called
+        //by a Jasmine test.
         evt.preventDefault()
     }
 
@@ -41,11 +43,16 @@ async function time_range(evt) {
             }
         }
     }
-    const user_id = $("#time_button").attr('name');
-    const url = urlBase + 'statistics-home/' + user_id;
+
+    const url = urlBase + 'statistics-home';
     const data = {'artist_range': artist_range, 'track_range': track_range};
     let stats = await axios.post(url, data);
     stats = stats.data;
+    //readjust css properties to hide the loading spinner and show the
+    //statistics content
+    $('.loader').css('display','none')
+    $("#stats_home").css('display', 'block')
+    $('#home_footer').css('display','block')
     $("#stats_home").html(stats);
     return stats;
 }
@@ -92,12 +99,13 @@ function backGroundImage() {
 }
 
 function loading() {
-    $('#content-wrap').css('display','none')
-    $('#auth_footer').css('display','none')
+    $('.loader').next().css('display','none')
+    if ($('#auth_footer').length) {
+        $('#auth_footer').css('display','none')
+    } else if ($('#home_footer').length) {
+        $('#home_footer').css('display','none')
+    }
     $('.loader').css('display','block')
-    $('#auth_body').css('display','flex')
-    $('#auth_body').css('justify-content','center')
-    $('#auth_body').css('align-items','center')
 }
 
 $('#profile_form').on("submit", async function(evt) {
@@ -105,7 +113,7 @@ $('#profile_form').on("submit", async function(evt) {
     let user = await axios.get('https://statify-winford.herokuapp.com/get-user')
     user = user.data
     $('#profile_content').html(`
-    <form action="/profile/${user.id}" method="POST">
+    <form action="/profile" method="POST">
     <div>
         <div class="form_element">
             <span>Leave any field to let it remain unchanged</span>
@@ -131,7 +139,7 @@ $('#profile_form').on("submit", async function(evt) {
     </form>
     `)
     $(document).ready(function() {
-        $('#countriesList').load('/countrydropdown');
+        $('#countriesList').load('/country-drop-down');
     });
 });
 //if the auth_body id exists then the page must be the authorization page
@@ -139,8 +147,9 @@ backGroundImage();
 
 lastModified();
 
+$("#time_form").on("submit", loading)
 $("#time_form").on("submit", time_range);
 
-$('#auth_form').on("submit", loading);
+$('.auth_form').on("submit", loading)
 
 $('#profile_form').on('submit', edit_profile);
