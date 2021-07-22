@@ -108,7 +108,7 @@ function loading() {
     $('.loader').css('display','block')
 }
 
-$('#profile_form').on("submit", async function(evt) {
+async function edit_profile(evt) {
     evt.preventDefault()
     let user = await axios.get('https://statify-winford.herokuapp.com/get-user')
     user = user.data
