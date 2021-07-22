@@ -28,7 +28,7 @@ class UpdateDatabaseTestCase(TestCase):
         db.drop_all()
         db.create_all()
 
-        new_user = update_user(user, 'token')
+        new_user = update_user(user, 'username', 'password', 'token')
 
         self.new_user = new_user
     
@@ -40,11 +40,11 @@ class UpdateDatabaseTestCase(TestCase):
     def test_update_user(self):
         """test if the update user function works"""
 
-        new_user = update_user(user, 'token')
+        new_user = update_user(user, 'username', 'password', 'token')
 
 
         self.assertEqual(new_user.id, 1)
-        self.assertEqual(new_user.display_name, 'jackwinford')
+        self.assertEqual(new_user.display_name, 'username')
         self.assertEqual(new_user.profile_pic_url, 'https://i.scdn.co/image/ab6775700000ee851b1fe4b55885c1747c550445')
 
 if __name__ == '__main__':

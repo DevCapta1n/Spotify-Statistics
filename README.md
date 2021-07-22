@@ -13,7 +13,8 @@ The table is represented the same way it is defined, in it's Flask SQLAlchemy fo
 To run the Jasmine tests for the javascript functions in script.js certain lines must be uncommented. These lines can be found at the bottom of authorize.html, home.html, and profile.html. When uncommented these lines contain the test script links for the respective tests for each page. The Jasmine printout can then be found at the bottom of each page.
 The Jasmine tests can be found in the static/ folder inside the following files authorize.test.js, home.test.js, and profile.test.js.
 
-To run the unittests for the Python use the following command while inside the root directory for the downloaded copy of Statify being used.2
+To run the unittests for the Python use the following command while inside the home directory for the downloaded copy of Statify being used:
+$ python -m unittest app_tests.py models_tests.py updates_data_tests.py
 
 The API being used for this site is the Spotify API. I will only use three parts of the api: authorization, personalization, and user profile. 
 

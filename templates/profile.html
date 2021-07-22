@@ -20,9 +20,6 @@
                     <span>STATIFY</span>
                 </div>
                 <ul id="nav_list" class="nav navbar-nav navbar-right">
-                {% if not user %}
-                <li><a class="nav_link" href="/authorize">Link Your Spotify</a></li>
-                {% else %}
                 <li>
                     <img src="{{ user.profile_pic_url }}" width="80" height="80" alt="{{ user.display_name }}'s profile picture">
                     <a class="nav_link" href="/profile">{{ user.display_name }}</a>
@@ -33,7 +30,6 @@
                 <li>
                     <a class="nav_link" href="/logout">Log out</a>
                 </li>
-                {% endif %}
                 </ul>
             </div>
         </nav>

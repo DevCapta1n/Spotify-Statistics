@@ -133,7 +133,7 @@ async function edit_profile(evt) {
     </form>
     `)
     $(document).ready(function() {
-        $('#countriesList').load('/countrydropdown');
+        $('#countriesList').load('/country-drop-down');
     });
 }
 //if the auth_body id exists then the page must be the authorization page

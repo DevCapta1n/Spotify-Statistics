@@ -14,9 +14,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///statify"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'ihaveasecret'
 
-#socketio = SocketIO(app)
-
-#socketio.run(app)
 connect_db(app)
 db.create_all()
 
@@ -108,8 +105,6 @@ def signup():
 
         username = request.form['username']
         password = request.form['password']
-        print(username)
-        print(password)
         if username == '':
             flash("Username must contain at least one character", 'danger')
             return render_template('login.html',
@@ -137,8 +132,6 @@ def login():
     if request.method == "POST":
         username = request.form['username']
         password = request.form['password']
-        print(username)
-        print(password)
         if username == '':
             flash("Username must contain at least one character", 'danger')
         if password == '':
@@ -173,12 +166,12 @@ def authorize():
 def initialize():
     """after redirection from the authorize function handle the users
     response to the spotify authorization page"""
-    print(session['from_authorize'])
+
     if session['from_authorize'] == True:
         session['from_authorize'] = False
     else:
         redirect('/authorize')
-    print(session['from_authorize'])
+
     redirect_uri = urlBase + 'initialize'
 
     client_secret = base_64("7c396993dafd46c3b30341981ec56217:ab3856d0c15b49fea1c56a467ac28605")
@@ -198,9 +191,9 @@ def initialize():
     # the authorized user
     token_url = "https://accounts.spotify.com/api/token"
     api_token_resp = requests.post(token_url, headers=auth_header, data=token_form, json=True)
-    print(api_token_resp)
+
     try:
-        print(api_token_resp.json()['access_token'])
+        api_token_resp.json()['access_token']
     except (json.decoder.JSONDecodeError, KeyError):
         flash("There was an issue communicating with Spotify. Please try again.", "danger")
         return redirect('/')
@@ -211,7 +204,7 @@ def initialize():
 
     #through a request to the spotify api get the current users profile data
     curr_user = requests.get('https://api.spotify.com/v1/me', headers=headers)
-    print(curr_user)
+
     try:
         curr_user = curr_user.json()
     except json.decoder.JSONDecodeError:
@@ -238,7 +231,7 @@ def initialize():
 def display_stats():
     """display the top artists and tracks the given user, also taking into account the 
     time range of their top artists and tracks"""
-    print(g.user)
+
     if g.user == None:
         flash("Access unauthorized.", "danger")
         return redirect("/")
@@ -339,7 +332,7 @@ def get_user():
         return jsonify(curr_user.to_dict())
     abort(405)
 
-@app.route('/countrydropdown')
+@app.route('/country-drop-down')
 def get_menu():
     """return the HTML file with the country drop down menu. Abort if
     there is not an authorized user in the session"""
