@@ -1,3 +1,5 @@
+//This file contains tests for the authorization page specific functions: backGroundImage()
+//as well as the other functions which are independent or used across multiple pages
 it('should return a random number', function() {
     expect(typeof(getRandomInt(4567))).toEqual('number')
 })

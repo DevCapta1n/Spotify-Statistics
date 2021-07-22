@@ -8,7 +8,6 @@ import requests
 import base64
 from requests.structures import CaseInsensitiveDict
 from update_database import update_user
-from flask_socketio import SocketIO
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///statify"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -19,7 +18,6 @@ db.create_all()
 
 client_id = "7c396993dafd46c3b30341981ec56217"
 urlBase = "http://127.0.0.1:5000/"
-redirect_uri = urlBase + 'login'
 
 def base_64(text):
     """convert text to ascii decoded base64"""
@@ -48,6 +46,7 @@ def do_login(user):
 
 def do_logout():
     """Logout user."""
+
     if 'user' in session:
         del session['user']
 
@@ -81,8 +80,8 @@ def root():
 def logout():
     """remove the user from the session then flash a logout message 
     and redirect to the landing page"""
-    if g.user:
 
+    if g.user:
         flash(f"{g.user.display_name} has been logged out", 'success')
 
     do_logout()
@@ -91,9 +90,9 @@ def logout():
 
 @app.route('/signup', methods=["GET", "POST"])
 def signup():
-    """Handle user signup.
+    """Handle user sign up.
 
-    Create new user and add to DB. Redirect to home page.
+    Add new username and password to session. Redirect to /authorize route.
 
     If form not valid, present form.
 
@@ -127,7 +126,9 @@ def signup():
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
-    """Handle user login."""
+    """Handle user login. Initially display the login page on GET and handle
+    the form data on a POST request as a primary authentication function. Redirect
+    to the /authorize route when username and password are legitmate"""
 
     if request.method == "POST":
         username = request.form['username']
@@ -151,8 +152,8 @@ def login():
 
 @app.route('/authorize', methods=['POST', 'GET'])
 def authorize():
-    """when the user clicks on the login button send a request to the authorize
-    end of the Spotify API accounts service"""
+    """when the either the /login or /signup routes redirect here, then send
+    a request to the authorize end of the Spotify API accounts service"""
 
     if 'PW' in session:
         redirect_uri = urlBase + 'initialize'
@@ -164,8 +165,9 @@ def authorize():
 
 @app.route('/initialize', methods=['POST', 'GET'])
 def initialize():
-    """after redirection from the authorize function handle the users
-    response to the spotify authorization page"""
+    """after redirection from the authorize function handle the user's
+    response to the spotify authorization page. As well as create/update
+    a user, handle any errors, and finally redirect to /statistics-home"""
 
     if session['from_authorize'] == True:
         session['from_authorize'] = False
@@ -173,8 +175,6 @@ def initialize():
         redirect('/authorize')
 
     redirect_uri = urlBase + 'initialize'
-
-    client_secret = base_64("7c396993dafd46c3b30341981ec56217:ab3856d0c15b49fea1c56a467ac28605")
     auth_code = request.args.get('code')
 
     token_form = {}
@@ -184,6 +184,7 @@ def initialize():
 
     # the client id and secret are combined in base64 encoded text for
     # the authorization 
+    client_secret = base_64("7c396993dafd46c3b30341981ec56217:ab3856d0c15b49fea1c56a467ac28605")
     auth_header = CaseInsensitiveDict()
     auth_header["Authorization"] = f"Basic {client_secret}"
 
@@ -218,13 +219,17 @@ def initialize():
         del session['signing in']
         return render_template('login.html',
                         form_url = 'login')
+
     if 'signing in' in session:
         del session['signing in']
+
+    #create/update the user as well as log them into the session
     token = api_token_resp.json()['access_token']
     new_user = update_user(curr_user, session['UN'], session['PW'], token)
+    do_login(new_user)
+
     del session['UN']
     del session['PW']
-    do_login(new_user)
     return redirect('/statistics-home')
 
 @app.route('/statistics-home', methods=['POST', 'GET'])
@@ -236,25 +241,12 @@ def display_stats():
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
-    artist_range = "long_term"
-    track_range = "long_term"
     curr_user = g.user
 
     headers = CaseInsensitiveDict()
     headers["Accept"] = "application/json"
     headers["Content-Type"] = "application/json"
     headers["Authorization"] = f"Bearer {curr_user.token}"
-
-    url = f"https://api.spotify.com/v1/me/top/artists?time_range={artist_range}&limit=10&offset=0"
-    track_url = f"https://api.spotify.com/v1/me/top/tracks?time_range={track_range}&limit=10&offset=0"
-
-    #get the top ten artists and tracks for logged in user
-    top_artists = requests.get(url, headers=headers)
-    t_tracks = requests.get(track_url, headers=headers)
-
-    fixed_lists = fix_short_list(top_artists.json()['items'], t_tracks.json()['items'])
-    top_ten_artists = fixed_lists[0]
-    top_ten_tracks = fixed_lists[1]
 
     if request.method == 'POST':
 
@@ -277,6 +269,19 @@ def display_stats():
                                 art_range=artist_range,
                                 trk_range=track_range)
 
+    artist_range = "long_term"
+    track_range = "long_term"
+
+    url = f"https://api.spotify.com/v1/me/top/artists?time_range={artist_range}&limit=10&offset=0"
+    track_url = f"https://api.spotify.com/v1/me/top/tracks?time_range={track_range}&limit=10&offset=0"
+
+    #get the top ten artists and tracks for logged in user
+    top_artists = requests.get(url, headers=headers)
+    t_tracks = requests.get(track_url, headers=headers)
+
+    fixed_lists = fix_short_list(top_artists.json()['items'], t_tracks.json()['items'])
+    top_ten_artists = fixed_lists[0]
+    top_ten_tracks = fixed_lists[1]
     return render_template('home.html',
                             title=f"{curr_user.display_name}'s Spotify Statistics",
                             artists=top_ten_artists,
@@ -295,6 +300,7 @@ def display_profile():
         return redirect("/")
 
     curr_user = g.user
+
     if request.method == 'POST':
 
         curr_user.profile_pic_url = request.form['picture']
@@ -302,6 +308,7 @@ def display_profile():
         curr_user.country = request.form['country']
         db.session.add(curr_user)
         db.session.commit()
+
     return render_template('profile.html',
                             user=curr_user)
 
@@ -330,6 +337,7 @@ def get_user():
     if g.user:
         curr_user = g.user
         return jsonify(curr_user.to_dict())
+
     abort(405)
 
 @app.route('/country-drop-down')
@@ -340,4 +348,5 @@ def get_menu():
     if g.user:
         return render_template('countrydropdown.html',
                                 currCountry=g.user.country)
+
     abort(405)

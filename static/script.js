@@ -9,6 +9,8 @@ async function time_range(evt) {
      * of the page with the response html from the server.
      */
     if (evt != undefined) {
+        //evt will be undefined in the case of this function being called
+        //by a Jasmine test.
         evt.preventDefault()
     }
 
@@ -46,6 +48,11 @@ async function time_range(evt) {
     const data = {'artist_range': artist_range, 'track_range': track_range};
     let stats = await axios.post(url, data);
     stats = stats.data;
+    //readjust css properties to hide the loading spinner and show the
+    //statistics content
+    $('.loader').css('display','none')
+    $("#stats_home").css('display', 'block')
+    $('#home_footer').css('display','block')
     $("#stats_home").html(stats);
     return stats;
 }
@@ -92,12 +99,13 @@ function backGroundImage() {
 }
 
 function loading() {
-    $('#content-wrap').css('display','none')
-    $('#auth_footer').css('display','none')
+    $('.loader').next().css('display','none')
+    if ($('#auth_footer').length) {
+        $('#auth_footer').css('display','none')
+    } else if ($('#home_footer').length) {
+        $('#home_footer').css('display','none')
+    }
     $('.loader').css('display','block')
-    $('#auth_body').css('display','flex')
-    $('#auth_body').css('justify-content','center')
-    $('#auth_body').css('align-items','center')
 }
 
 async function edit_profile(evt) {
@@ -141,6 +149,7 @@ backGroundImage()
 
 lastModified()
 
+$("#time_form").on("submit", loading)
 $("#time_form").on("submit", time_range);
 
 $('.auth_form').on("submit", loading)

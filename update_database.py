@@ -1,7 +1,7 @@
-"""functions for updating the statify database with data from the spotify api"""
-
+"""a function for updating the statify database with data from the spotify api"""
 from models import db, connect_db, User
 from app import bcrypt
+
 def update_user(user_json, username, password, token):
     """update, create, or do nothing, then return the passed in user"""
 
@@ -33,7 +33,6 @@ def update_user(user_json, username, password, token):
 
         #an existing user's token should be out of date every session
         #so it needs to be updated
-        print("TOKEN IS BEING UPDATED")
         target_user.token = token
         db.session.add(target_user)
         db.session.commit()
