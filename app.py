@@ -104,12 +104,12 @@ def signup():
 
         username = request.form['username']
         password = request.form['password']
-        if username == '':
-            flash("Username must contain at least one character", 'danger')
+        if username == '' or len(username) > 10 :
+            flash("Username must contain at least one character and be less than ten characters", 'danger')
             return render_template('login.html',
                         form_url = 'signup')
-        if password == '':
-            flash("Password must contain at least one character", 'danger')
+        if password == '' or len(password) > 10:
+            flash("Password must contain at least one character and be less than ten characters", 'danger')
             return render_template('login.html',
                         form_url = 'signup')
         if User.query.filter_by(display_name=username).first():
