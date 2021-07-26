@@ -147,9 +147,7 @@ async function edit_profile(evt) {
 }
 
 async function next_page(event) {
-    console.log("hello")
     if (typeof event.preventDefault === "function") {
-        console.log("checkpoint")
         event.preventDefault()
     }
     const page_num = pages[event.data.page];
