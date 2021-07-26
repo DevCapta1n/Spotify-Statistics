@@ -142,7 +142,26 @@ async function edit_profile(evt) {
     $(document).ready(function() {
         $('#countriesList').load('/country-drop-down');
     });
-};
+}
+
+async function next_page(event) {
+    console.log("hello")
+    if (typeof event.preventDefault === "function") {
+        console.log("checkpoint")
+        event.preventDefault()
+    }
+    const page_num = pages[event.data.page];
+    const data = {page: page_num, use_session: true};
+    let stats = await axios.post(urlBase + 'statistics-home', data);
+    stats = stats.data;
+    //readjust css properties to hide the loading spinner and show the
+    //statistics content
+    $('.loader').css('display','none')
+    $("#stats_home").css('display', 'block')
+    $('#home_footer').css('display','block')
+    $("#stats_home").html(stats);
+    return stats;
+}
 //if the auth_body id exists then the page must be the authorization page
 backGroundImage();
 
