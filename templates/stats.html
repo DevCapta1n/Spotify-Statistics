@@ -15,7 +15,7 @@
             </thead>
             {% for artist in artists %}
             <tr>
-                <td>#{{ artists.index(artist) + 1 }}</td>
+                <td>#{{ artists.index(artist) + 1 + offset }}</td>
                 <td><img src="{{ artist['images'][2]['url'] }}" width="160" height="160" alt="image for {{ artist['name'] }}"></td>
                 <td>{{ artist['name'] }}</td>
             </tr>
@@ -39,7 +39,7 @@
             </thead>
             {% for track in tracks %}
             <tr>
-                <td>#{{ tracks.index(track) + 1 }}</td>
+                <td>#{{ tracks.index(track) + 1 + offset }}</td>
                 <td><img src="{{ track['album']['images'][1]['url'] }}" width="160" height="160" alt="album cover for {{ track['name'] }}"></td>
                 <td>{{ track['name'] }}</td>
                 <td>

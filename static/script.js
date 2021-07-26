@@ -1,5 +1,6 @@
 //Javascript for Statify 
 const urlBase = "http://127.0.0.1:5000/";
+const pages = {"page_one": 'one', "page_two": 'two', "page_three": "three", "page_four": "four", "page_five": "five"}
 
 async function time_range(evt) {
     /**
@@ -144,6 +145,24 @@ async function edit_profile(evt) {
         $('#countriesList').load('/country-drop-down');
     });
 }
+
+async function next_page(event) {
+    console.log("CHECKPOINT")
+    if (event != undefined) {
+        event.preventDefault()
+    }
+    const page_num = pages[event.data.page];
+    const data = {page: page_num, use_session: true};
+    let stats = await axios.post(urlBase + 'statistics-home', data);
+    stats = stats.data;
+    //readjust css properties to hide the loading spinner and show the
+    //statistics content
+    $('.loader').css('display','none')
+    $("#stats_home").css('display', 'block')
+    $('#home_footer').css('display','block')
+    $("#stats_home").html(stats);
+    return stats;
+}
 //if the auth_body id exists then the page must be the authorization page
 backGroundImage()
 
@@ -151,6 +170,13 @@ lastModified()
 
 $("#time_form").on("submit", loading)
 $("#time_form").on("submit", time_range);
+
+$('window')
+$("#page_one").on("click", {page: "page_one"}, next_page);
+$("#page_two").on("click", {page: "page_two"}, next_page);
+$("#page_three").on("click", {page: "page_three"}, next_page);
+$("#page_four").on("click", {page: "page_four"}, next_page);
+$("#page_five").on("click", {page: "page_five"}, next_page);
 
 $('.auth_form').on("submit", loading)
 

@@ -104,12 +104,12 @@ def signup():
 
         username = request.form['username']
         password = request.form['password']
-        if username == '':
-            flash("Username must contain at least one character", 'danger')
+        if username == '' or len(username) > 10:
+            flash("Username must contain at least one character and be less than ten characters", 'danger')
             return render_template('login.html',
                         form_url = 'signup')
-        if password == '':
-            flash("Password must contain at least one character", 'danger')
+        if password == '' or len(password) > 10:
+            flash("Password must contain at least one character and be less than ten characters", 'danger')
             return render_template('login.html',
                         form_url = 'signup')
         if User.query.filter_by(display_name=username).first():
@@ -236,6 +236,7 @@ def initialize():
 def display_stats():
     """display the top artists and tracks the given user, also taking into account the 
     time range of their top artists and tracks"""
+    pages = {'one': 0, 'two': 10, 'three': 20, 'four': 30, 'five': 40}
 
     if g.user == None:
         flash("Access unauthorized.", "danger")
@@ -250,36 +251,53 @@ def display_stats():
 
     if request.method == 'POST':
 
-        artist_range = request.json['artist_range']
-        track_range = request.json['track_range']
+        if 'use_session' in request.json:
+            offset = pages[request.json['page']]
+        else:
+            offset = 0
+            session['artist_range'] = request.json['artist_range']
+            session['track_range'] = request.json['track_range']
 
-        url = f"https://api.spotify.com/v1/me/top/artists?time_range={artist_range}&limit=10&offset=0"
-        track_url = f"https://api.spotify.com/v1/me/top/tracks?time_range={track_range}&limit=10&offset=0"
+        url = f"https://api.spotify.com/v1/me/top/artists?time_range={session['artist_range']}&limit=10&offset={offset}"
+        track_url = f"https://api.spotify.com/v1/me/top/tracks?time_range={session['track_range']}&limit=10&offset={offset}"
 
         #get the top ten artists and tracks for logged in user
         top_artists = requests.get(url, headers=headers)
         t_tracks = requests.get(track_url, headers=headers)
 
-        fixed_lists = fix_short_list(top_artists.json()['items'], t_tracks.json()['items'])
+        try:
+            fixed_lists = fix_short_list(top_artists.json()['items'], t_tracks.json()['items'])
+        except KeyError:
+            flash("Your session with spotify ended. Log back in to start a new session", "warning")
+            return redirect("/login")
+
         top_ten_artists = fixed_lists[0]
         top_ten_tracks = fixed_lists[1]
         return render_template('stats.html',
                                 artists=top_ten_artists,
                                 tracks=top_ten_tracks,
-                                art_range=artist_range,
-                                trk_range=track_range)
+                                offset=offset,
+                                art_range=session['artist_range'],
+                                trk_range=session['track_range'])
 
-    artist_range = "long_term"
-    track_range = "long_term"
+    session['artist_range'] = "long_term"
+    session['track_range'] = "long_term"
 
-    url = f"https://api.spotify.com/v1/me/top/artists?time_range={artist_range}&limit=10&offset=0"
-    track_url = f"https://api.spotify.com/v1/me/top/tracks?time_range={track_range}&limit=10&offset=0"
+    url = f"https://api.spotify.com/v1/me/top/artists?time_range={session['artist_range']}&limit=10&offset=0"
+    track_url = f"https://api.spotify.com/v1/me/top/tracks?time_range={session['track_range']}&limit=10&offset=0"
 
     #get the top ten artists and tracks for logged in user
     top_artists = requests.get(url, headers=headers)
     t_tracks = requests.get(track_url, headers=headers)
 
-    fixed_lists = fix_short_list(top_artists.json()['items'], t_tracks.json()['items'])
+    try:
+        fixed_lists = fix_short_list(top_artists.json()['items'], t_tracks.json()['items'])
+    except KeyError:
+        flash("Your session with spotify ended. Log back in to start a new session", "warning")
+        return redirect("/login")
+
+    
+    
     top_ten_artists = fixed_lists[0]
     top_ten_tracks = fixed_lists[1]
     return render_template('home.html',
@@ -287,8 +305,8 @@ def display_stats():
                             artists=top_ten_artists,
                             tracks=top_ten_tracks,
                             user=curr_user,
-                            art_range=artist_range,
-                            trk_range=track_range)
+                            art_range=session['artist_range'],
+                            trk_range=session['track_range'])
 
 @app.route('/profile', methods=['POST', 'GET'])
 def display_profile():
