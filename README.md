@@ -41,6 +41,10 @@ Spotify API
 Unittest
 and Heroku as the web server
 
+There is a privacy policy that I generated for this website (with privacypolicies.com) at this link: https://www.privacypolicies.com/live/521c66e2-fdc5-4a90-919f-8138a1697c51
+
+For clarification the only data Statify stores is data related to user accounts. Statify gets Spotify profile data for use as the following default user values: display name, profile picture url, country (sometimes defaults to United States), link to Spotify profile, and Spotify followers. All of those values, besides the link to the Spotify profile, can be edited in the Statify profile page. To remove your account and it's data go to the profile page and select the 'delete account button'.
+
 Photo Credits:
 https://unsplash.com/photos/F-B7kWlkxDQ
 Travis Yewell on Unsplash,
