@@ -41,7 +41,9 @@
                     </div>
                 </form>
                 {% if form_url == "signup" %}
-                <span>Make sure to remember your username and password. Alternatively, before closing your tab simply delete your account. There is no username or password recovery.</span>
+                <span>Make sure to remember your username and password. Alternatively, before closing your tab simply delete your account. There is no username or password recovery.</span><br>
+                <i>Statify only stores information for your profile. All of which is removed if you chose to delete your profile. For a full privacy policy see the link below.</i><br>
+                <a href="https://www.privacypolicies.com/live/521c66e2-fdc5-4a90-919f-8138a1697c51" target="_blank">Privacy Policy</a>
                 {% endif %}
                 <div id="flash_zone">
                     {% for category, message in get_flashed_messages(with_categories=True) %}
