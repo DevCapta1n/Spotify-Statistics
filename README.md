@@ -1,5 +1,4 @@
-# Capstone-One-Spotify-Statistics
-Website Name: Statify
+# Statify
 Website URL: https://statify-winford.herokuapp.com/
 
 Statify uses information from the Spotify API to display a user's top ten tracks and artists for all time, six months, and four weeks. The website redirects to a Spotify authorization page on login where a user can accept or deny the permissions needed for getting their profile and personal history highlights. If the user accepts the prompted permissions then the spotify API grants the user a unique token for that user, and session, which is used for making the calls to get the user's profile information and listening highlights. The user is then shown the home page with their top tracks and artists of all time listed. On this home page the user can select from among the three time ranges for tracks and artists as well as logout, and view their profile page. On their profile page the user can visit their Spotify profile by direct link and edit their account information. The account information for a user is superficial besides their session token and is stored in the site database.
